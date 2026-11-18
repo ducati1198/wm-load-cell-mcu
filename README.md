@@ -1,20 +1,20 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.1.0-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/board-WonderMaker%20ZR%20Ultra--S%20CELL-orange)
+![version](https://img.shields.io/badge/version-1.0.1-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
-Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S**.
+Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No Pico, no wires, no soldering.** Everything runs from the printer's Raspberry Pi.
 
-**Version 1.1.0** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.1** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
 > **Use this at your own risk. The author (ducati1198) is not responsible for any damage**, including a load
 > cell board that no longer starts, a damaged printer, lost prints, lost data or loss of warranty. This is a
 > community project. It is **not** from WonderMaker and has no support from them. It comes with no warranty
-> of any kind (see the GPLv3 licence). It was tested on **one** board only.
+> of any kind (see the GPLv3 licence). It was tested on **one** board only (a ZR Ultra-S).
 >
 > ### 🔌 Do not lose power while it writes
 >
@@ -55,9 +55,16 @@ This repo solves it in software. The running firmware does talk on the right pin
 `debug_read` / `debug_write` commands. The tool `rpi/tools/cell_bl_soft.py` uses them to replace the
 bootloader with one that uses PA11/PA12 (same CAN id as before). After that, flashing over CAN works.
 
+## Which printers
+
+| Printer | Status |
+|---|---|
+| WonderMaker **ZR Ultra-S** | Tested (one printer, run by a Raspberry Pi) |
+| WonderMaker **ZR Ultra** | Meant to work too, **not tested**. The tool checks the firmware name, the chip and the flash size and stops without changing anything if the board is not the one it knows. |
+
 ## What you need
 
-- A WonderMaker ZR Ultra-S **run by a Raspberry Pi** with Klipper in `~/klipper` and `~/klippy-env`.
+- A WonderMaker ZR Ultra-S or ZR Ultra **run by a Raspberry Pi** with Klipper in `~/klipper` and `~/klippy-env`.
 - The CAN interface `can0` up, and `[mcu CELL]` with its `canbus_uuid` in `~/printer_data/config`.
 - The load cell board running `KLP_CELL_WM_ZRU_20251223_162212` or V2. The tool stops by itself on anything else.
 - The printer idle, heaters off. Do not start this during a print.

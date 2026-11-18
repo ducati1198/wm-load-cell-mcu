@@ -1,4 +1,4 @@
-WonderMaker ZR Ultra-S  -  load cell board (CELL) firmware V2 and flashing over CAN
+WonderMaker ZR Ultra-S and ZR Ultra  -  load cell board (CELL) firmware V2 and flashing over CAN
 ===================================================================================
 
 Credit: the idea and the first steps come from ducati1198 (Discord, GitHub name "ducati1198").

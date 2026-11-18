@@ -21,7 +21,7 @@ TARBALL="https://github.com/ducati1198/wm-load-cell-mcu/archive/refs/heads/main.
 
 local_version()  { tr -d ' \r\n' < "$ROOT/VERSION" 2>/dev/null || echo "?"; }
 latest_fw()      { tr -d ' \r\n' < "$HERE/firmware/LATEST" 2>/dev/null; }
-remote_version() { curl -fsS --max-time 4 "$RAW/VERSION" 2>/dev/null | tr -d ' \r\n'; }
+remote_version() { curl -fsS --max-time 4 "$RAW/VERSION?t=$(date +%s)" 2>/dev/null | tr -d ' \r\n'; }   # ?t= : GitHub caches the plain address for a few minutes
 current() {
   curl -s --max-time 5 "$MOON/printer/objects/query?mcu%20CELL" 2>/dev/null \
     | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["status"]["mcu CELL"]["mcu_version"])' 2>/dev/null

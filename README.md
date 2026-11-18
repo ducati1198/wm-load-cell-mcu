@@ -5,7 +5,7 @@
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
-- **No Pico, no wires, no soldering.** Everything runs from the printer's Raspberry Pi.
+- **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 
 **Version 1.0.1** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
@@ -63,6 +63,8 @@ bootloader with one that uses PA11/PA12 (same CAN id as before). After that, fla
 | WonderMaker **ZR Ultra** | Meant to work too, **not tested**. The tool checks the firmware name, the chip and the flash size and stops without changing anything if the board is not the one it knows. |
 
 ## What you need
+
+**No special hardware.** You do **not** need an SWD programmer (ST-Link, J-Link, Pico or similar) and you do not open the board.
 
 - A WonderMaker ZR Ultra-S or ZR Ultra **run by a Raspberry Pi** with Klipper in `~/klipper` and `~/klippy-env`.
 - The CAN interface `can0` up, and `[mcu CELL]` with its `canbus_uuid` in `~/printer_data/config`.

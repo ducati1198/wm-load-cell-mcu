@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.14 - 2026-11-18
+- The menu no longer prints "No such file or directory" for `.bootloader-state` on a fresh download (seen when the vanilla Klipper installer opens this menu for the first time).
+- README: new section about the vanilla Klipper installer, which downloads this project and flashes V2 at the end of a full install.
+
 ## 1.0.13 - 2026-11-18
 - README and `zr-ultra/README.md` checked against the repo and corrected (screen board, menu keys, files, tests, retry numbers). `MD5SUMS` and `SHA256SUMS` refreshed: they still had the checksum of the old `cell_bl_soft.py`.
 

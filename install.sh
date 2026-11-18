@@ -42,7 +42,7 @@ current() {   # firmware name of the board; waits up to ~30 s while Klipper is s
   done
 }
 bl_state() {   # last known bootloader of the board (written by the scripts after a check, install or restore)
-  local K T; read -r K T < "$ROOT/.bootloader-state" 2>/dev/null || { echo "not checked yet (type b to check)"; return; }
+  local K T; { read -r K T < "$ROOT/.bootloader-state"; } 2>/dev/null || { echo "not checked yet (type b to check)"; return; }
   T="$(date -d "@$T" '+%Y-%m-%d %H:%M' 2>/dev/null)"
   case "$K" in
     new)     echo "NEW (CAN bootloader, PA11/PA12), checked $T" ;;

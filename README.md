@@ -1,6 +1,6 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.13-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.14-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
@@ -9,7 +9,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi, or from the WonderMaker factory screen board, over the normal CAN cable.
 
-**Version 1.0.13** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.14** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -195,6 +195,10 @@ bash install.sh
 After an update you do **not** have to flash again. Only flash again if the changelog says the firmware or the
 bootloader changed and you want that change. Check which firmware the board runs in the menu header
 (`Board firmware now: ...`).
+
+## Used by the WonderMaker vanilla Klipper installer
+
+The installer [WM_Ultra_Vanilla_Klipper](https://github.com/ducati1198/WM_Ultra_Vanilla_Klipper) uses this project. At the end of a full install it reads the firmware name of the load cell board; if the board is not on the newest V2 it downloads this project into `~/wm-load-cell-mcu` and runs `zr-ultra/2_flash_app_can.sh` (it asks once). **Advanced > Load cell board** (`./installer.sh --load-cell`) opens the menu of this project. The installer reads `zr-ultra/firmware/LATEST` and the board's firmware name, so keep that file correct when a new firmware is added.
 
 ## Install without the menu
 

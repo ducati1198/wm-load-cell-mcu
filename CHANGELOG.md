@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.8 - 2026-11-18
+- The menu waits (up to about 30 s) for Klipper to finish starting before it shows the board firmware, so it no longer says "unknown" right after a flash or a cancel.
+- All menu options tested on the WonderMaker factory screen board: 1, 2, 3, u (also from the factory state), u when up to date, and answering no.
+
 ## 1.0.7 - 2026-11-18
 - Tested on the WonderMaker factory screen board: install from the factory state works (bootloader replaced, V2 flashed over CAN, verified). It is slower than a Raspberry Pi: the bootloader write took 3.9 s (1.2 s on a Pi), the whole run about 1 min 20 s. README warning and script texts now say "1 to 4 seconds".
 

@@ -118,6 +118,44 @@ cd wm-load-cell-mcu-main/rpi
 bash install.sh
 ```
 
+## Update the repo (it is already on your Pi)
+
+Updating only refreshes the files on the Pi. **It does not change anything on the load cell board.**
+Your board keeps the firmware and bootloader it has until you run the menu again.
+
+If you installed with `git clone`:
+
+```bash
+cd ~/wm-load-cell-mcu
+cat VERSION                 # the version you have now
+git pull                    # get the new files
+cat VERSION                 # the new version
+```
+
+`git pull` says `Already up to date.` if there is nothing new. Read [`CHANGELOG.md`](CHANGELOG.md) to see what changed.
+
+If `git pull` complains about local changes (you edited a file), put your copy aside and take the repo's version:
+
+```bash
+cd ~/wm-load-cell-mcu
+git stash                   # keeps your edits in a safe place (git stash pop brings them back)
+git pull
+```
+
+If you installed with the `curl` download (no `git`), there is nothing to pull. Delete the folder and download again:
+
+```bash
+cd ~
+rm -rf wm-load-cell-mcu-main
+curl -L https://github.com/ducati1198/wm-load-cell-mcu/archive/refs/heads/main.tar.gz | tar xz
+cd wm-load-cell-mcu-main/rpi
+bash install.sh
+```
+
+After an update you do **not** have to flash again. Only flash again if the changelog says the firmware or the
+bootloader changed and you want that change. Check which firmware the board runs in the menu header
+(`Board firmware now: ...`).
+
 ## Install without the menu
 
 One command, same checks and questions as the menu:

@@ -45,7 +45,7 @@ HOW TO FLASH
   verifies, starts Klipper and prints the new firmware name. The printer must be idle, heaters off.
 
 THE ONE RISK
-  Replacing the bootloader takes about 2 seconds. For about 0.2 seconds of that the board has no bootloader.
+  Replacing the bootloader takes about 1.2 seconds on a Raspberry Pi and about 4 seconds on the factory screen board. At the start of it (about 0.2 s on a Raspberry Pi, longer on the screen board) the board has no bootloader.
   If the printer loses power or is switched off in that moment, the board does not start again and only an
   SWD probe (1_write_bootloader_swd.sh) can bring it back. Do not touch the printer while it writes.
   If the tool says the read-back differs, it writes again by itself; never power off in between.
@@ -68,7 +68,7 @@ RESCUE WITH A PROBE  (only if something went wrong; not needed normally)
 
 WARNINGS
   - You do this at your own risk. The author (ducati1198) is not responsible for any damage. Nothing here is from WonderMaker.
-  - DO NOT LOSE POWER while the bootloader is written (about 2 seconds): the board can stop starting for good.
+  - DO NOT LOSE POWER while the bootloader is written (1 to 4 seconds): the board can stop starting for good.
     Do not switch off, unplug or touch the printer until the tool says it is finished. Use stable power.
   - Tested on ONE board. If your board is different the tool should stop by itself and change nothing.
 

@@ -45,7 +45,7 @@ echo "This puts the board back to the original factory state."
 echo "AFTER it, the board has the factory bootloader again and can NOT be flashed over CAN"
 echo "(until install.sh option 1 replaces the bootloader again)."
 echo
-echo "RISK: replacing the bootloader takes about 2 seconds. If the printer loses power, is switched off or"
+echo "RISK: replacing the bootloader takes 1 to 4 seconds (longer on the factory screen board). If the printer loses power, is switched off or"
 echo "      unplugged in that time, the board can stop starting for good (only an SWD probe brings it back)."
 echo "      Do NOT touch the printer or the power until it says it is finished."
 echo "      You use this at your own risk; the author is not responsible for any damage."

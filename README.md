@@ -1,6 +1,6 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.6-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.7-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
@@ -9,7 +9,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 
-**Version 1.0.6** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.7** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -20,7 +20,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 >
 > ### 🔌 Do not lose power while it writes
 >
-> The first time, the tool replaces the board's bootloader. It takes about 2 seconds. **If the printer loses
+> The first time, the tool replaces the board's bootloader. It takes about 1 to 4 seconds (longer on the factory screen board). **If the printer loses
 > power, is switched off, is unplugged, or the board resets while the tool is writing, the board can stop
 > starting for good.** Only a hardware probe on the SWD pads can bring it back (see [Rescue](#rescue-with-a-probe)).
 >
@@ -73,9 +73,13 @@ bootloader with one that uses PA11/PA12 (same CAN id as before). After that, fla
 - The load cell board running `KLP_CELL_WM_ZRU_20251223_162212` or V2. The tool stops by itself on anything else.
 - The printer idle, heaters off. Do not start this during a print.
 
-The factory screen board uses the same `install.sh` (no separate folder). The read-only checks on it passed; the full flash test on that board is still open.
+The factory screen board uses the same `install.sh` (no separate folder). Tested there: install from the factory state works (see the warning below: it is slower).
 
 ---
+
+## ⚠️ Factory screen board: slower
+
+On the **WonderMaker factory screen board** the whole process takes longer than on a Raspberry Pi (a full install from the factory state took about 1 minute 20 seconds in the test). Writing the bootloader took about **4 seconds** there, against about 1.2 seconds on a Raspberry Pi, so the time when a power loss can break the board is longer. Do not touch the printer, do not unplug it and do not switch it off until the script says it is finished. Wait for it, it is not stuck.
 
 ## Factory screen board login
 
@@ -122,7 +126,7 @@ Choose `1` to install V2. (`2` flashes the factory firmware, `3` puts the board 
 
 1. checks the files, the CAN id and that the printer is not printing;
 2. stops Klipper and looks which bootloader is on the board;
-3. if it is the factory bootloader: explains the risk and asks **once** for `yes`; then it replaces the bootloader (about 2 seconds), flashes the firmware over CAN and verifies it;
+3. if it is the factory bootloader: explains the risk and asks **once** for `yes`; then it replaces the bootloader (1 to 4 seconds), flashes the firmware over CAN and verifies it;
 4. if the CAN bootloader is already on the board, it asks once for `yes` and flashes;
 5. starts Klipper and prints the firmware name the board reports.
 
@@ -224,7 +228,7 @@ your id, nothing was written; power the printer off and on and start again.
 
 ## The one risk (power loss)
 
-Replacing the bootloader takes about 2 seconds. For about **0.2 seconds** of that the board has no bootloader.
+Replacing the bootloader takes about 1.2 seconds on a Raspberry Pi and about **4 seconds on the factory screen board** (measured). For the first part of that (about 0.2 seconds on a Raspberry Pi, longer on the screen board) the board has no bootloader.
 If the printer loses power or is switched off in that moment, the board does not start again, and only an
 SWD probe can bring it back (see [Rescue](#rescue-with-a-probe)).
 
@@ -240,7 +244,7 @@ Everything is reversible, from the menu:
 - **Option 2** flashes the original factory firmware (the board keeps the new bootloader, so you can flash again).
 - **Option 3** puts the board back to the **original factory state**: it flashes the factory firmware first, then writes the
   original factory bootloader. Afterwards the board can **not** be flashed over CAN until option 1 replaces the bootloader again.
-  The same power-loss warning applies (about 2 seconds).
+  The same power-loss warning applies (1 to 4 seconds).
 
 Without the menu:
 

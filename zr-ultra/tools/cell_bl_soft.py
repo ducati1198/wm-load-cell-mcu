@@ -7,7 +7,7 @@
 #   cell_bl_soft.py UUID write BOOTLOADER.bin  replace the bootloader at 0x08000000   (add --force to skip the checks)
 #
 # Klipper must be stopped (this tool talks to the board itself; it uses the klippy code of ~/klipper).
-# NEVER reset or power off the printer while it writes (about 2 seconds).
+# NEVER reset or power off the printer while it writes (1 to 4 seconds).
 import sys, os, time, hashlib, logging
 logging.disable(logging.WARNING)
 KDIR = os.environ.get("KLIPPER_DIR", os.path.expanduser("~/klipper"))

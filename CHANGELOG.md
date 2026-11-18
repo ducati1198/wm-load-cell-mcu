@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.7 - 2026-11-18
+- Tested on the WonderMaker factory screen board: install from the factory state works (bootloader replaced, V2 flashed over CAN, verified). It is slower than a Raspberry Pi: the bootloader write took 3.9 s (1.2 s on a Pi), the whole run about 1 min 20 s. README warning and script texts now say "1 to 4 seconds".
+
 ## 1.0.6 - 2026-11-18
 - The folder `rpi` is now `zr-ultra`, and `install.sh` is in the main folder: `bash install.sh`. Run it on the printer's Raspberry Pi or on the WonderMaker factory screen board.
 - A small `rpi/install.sh` stays only so that an update from an older version (`u` in the menu) still finds its way to the new place.

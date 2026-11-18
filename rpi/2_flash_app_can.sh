@@ -68,8 +68,9 @@ case "$KIND" in
     echo
     echo "This board has the FACTORY bootloader, which cannot be reached over CAN (wrong pins)."
     echo "It is replaced now in software, through the running firmware: no Pico, no wires. It takes about 2 seconds."
-    echo "RISK: if the printer loses power or is switched off during those 2 seconds, the board will not start"
-    echo "      again without an SWD probe. Do not touch the printer while it writes."
+    echo "RISK: if the printer loses power, is switched off or unplugged during those 2 seconds, the board can stop"
+    echo "      starting for good (only an SWD probe brings it back). Do NOT touch the printer or the power until"
+    echo "      it says it is finished. You use this at your own risk; the author is not responsible for any damage."
     if [ $DRY -eq 1 ]; then
       say "dry run: would replace the bootloader with $(basename "$NEWBL"), then flash $(basename "$BIN")"
       back; exit 0

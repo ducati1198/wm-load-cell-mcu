@@ -7,8 +7,24 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 
 Version: see [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
-> **At your own risk.** Nothing here comes from WonderMaker. It was tested on **one** board.
-> Read [The one risk](#the-one-risk) before you flash.
+> ## ⚠️ Warning: read this first
+>
+> **Use this at your own risk. The author (ducati1198) is not responsible for any damage**, including a load
+> cell board that no longer starts, a damaged printer, lost prints, lost data or loss of warranty. This is a
+> community project. It is **not** from WonderMaker and has no support from them. It comes with no warranty
+> of any kind (see the GPLv3 licence). It was tested on **one** board only.
+>
+> ### 🔌 Do not lose power while it writes
+>
+> The first time, the tool replaces the board's bootloader. It takes about 2 seconds. **If the printer loses
+> power, is switched off, is unplugged, or the board resets while the tool is writing, the board can stop
+> starting for good.** Only a hardware probe on the SWD pads can bring it back (see [Rescue](#rescue-with-a-probe)).
+>
+> - Do not switch off, unplug or touch the printer, and do not reboot the Pi, until the tool says it is finished.
+> - Use stable power. Do not do this during a storm or when the power is unstable. A UPS is a good idea.
+> - Do not close the SSH window in the middle of a write. Use `screen` or `tmux` if your connection is weak.
+> - Never start it while the printer is printing, heating or moving.
+> - Keep the Pico rescue kit (see below) in mind if you cannot afford a dead board.
 
 ---
 
@@ -138,7 +154,7 @@ your id, nothing was written; power the printer off and on and start again.
 
 ---
 
-## The one risk
+## The one risk (power loss)
 
 Replacing the bootloader takes about 2 seconds. For about **0.2 seconds** of that the board has no bootloader.
 If the printer loses power or is switched off in that moment, the board does not start again, and only an
@@ -214,7 +230,10 @@ Tested on one board and one printer (2026-11-18), with a probe wired as a safety
 Not tested: other boards, other firmware versions, a power loss during the bootloader write.
 If you try it, please report what your board said, good or bad.
 
-## Licence
+## Licence and no warranty
 
 GPLv3. The new bootloader is built from [CanBoot/Katapult](https://github.com/Arksine/katapult) and
 `tools/flashtool.py` is the Katapult flash tool, both GPLv3 (Eric Callahan). The firmware is Klipper (GPLv3).
+
+As the GPLv3 says, this software is provided "as is", **without warranty of any kind**. You use it at your own risk.
+The author is not liable for any damage or loss that comes from using it.

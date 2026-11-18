@@ -65,7 +65,9 @@ RESCUE WITH A PROBE  (only if something went wrong; not needed normally)
   Both save the whole flash to ~/cell-backup-DATE/ first.
 
 WARNINGS
-  - You do this at your own risk. Nothing here is from WonderMaker.
+  - You do this at your own risk. The author (ducati1198) is not responsible for any damage. Nothing here is from WonderMaker.
+  - DO NOT LOSE POWER while the bootloader is written (about 2 seconds): the board can stop starting for good.
+    Do not switch off, unplug or touch the printer until the tool says it is finished. Use stable power.
   - Tested on ONE board. If your board is different the tool should stop by itself and change nothing.
 
 TEST STATUS (2026-11-18, ONE board, one printer, a Pico wired as safety net)

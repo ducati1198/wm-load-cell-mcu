@@ -74,13 +74,7 @@ cd wm-load-cell-mcu/rpi
 bash install.sh
 ```
 
-```
- WonderMaker load cell board (CELL) - flash over CAN   v1.0.0
- Board firmware now: KLP_CELL_WM_ZRU_20251223_162212
-  1) Flash V2        KLP_CELL_WM_ZRU_RPI_V2_20261117
-  2) Flash factory   KLP_CELL_WM_ZRU_20251223_162212
-  q) Quit
-```
+![The install.sh menu](docs/menu.png)
 
 Choose `1`. The script then:
 

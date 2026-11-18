@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.9 - 2026-11-18
+- The wait for Klipper after a flash or a cancel now follows the Klipper service (the 1.0.8 check was not enough).
+
 ## 1.0.8 - 2026-11-18
 - The menu waits (up to about 30 s) for Klipper to finish starting before it shows the board firmware, so it no longer says "unknown" right after a flash or a cancel.
 - All menu options tested on the WonderMaker factory screen board: 1, 2, 3, u (also from the factory state), u when up to date, and answering no.

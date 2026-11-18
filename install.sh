@@ -31,13 +31,12 @@ remote_version() {   # the GitHub API is always current; the raw address is cach
   echo "$V"
 }
 current() {   # firmware name of the board; waits up to ~30 s while Klipper is still starting after a flash
-  local i V ST
+  local i V
   for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     V="$(curl -s --max-time 5 "$MOON/printer/objects/query?mcu%20CELL" 2>/dev/null \
       | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["status"]["mcu CELL"]["mcu_version"])' 2>/dev/null)"
     [ -n "$V" ] && { echo "$V"; return; }
-    ST="$(curl -s --max-time 3 "$MOON/server/info" 2>/dev/null | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["klippy_state"])' 2>/dev/null)"
-    [ "$ST" = "startup" ] || return
+    systemctl is-active --quiet klipper 2>/dev/null || return   # Klipper is not running: nothing to wait for
     sleep 2
   done
 }

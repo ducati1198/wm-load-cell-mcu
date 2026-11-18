@@ -1,13 +1,13 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.0-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/board-WonderMaker%20ZR%20Ultra--S%20CELL-orange)
+![version](https://img.shields.io/badge/version-1.1.0-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/board-WonderMaker%20ZR%20Ultra--S%20CELL-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S**.
 
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No Pico, no wires, no soldering.** Everything runs from the printer's Raspberry Pi.
 
-**Version 1.0.0** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.1.0** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -94,7 +94,7 @@ bash install.sh
 
 ![The install.sh menu](docs/menu.png)
 
-Choose `1`. The script then:
+Choose `1` to install V2. (`2` flashes the factory firmware, `3` puts the board back to the original factory state, see [Way back](#way-back).) The script then:
 
 1. checks the files, the CAN id and that the printer is not printing;
 2. stops Klipper and looks which bootloader is on the board;
@@ -169,19 +169,20 @@ SWD probe can bring it back (see [Rescue](#rescue-with-a-probe)).
 
 ## Way back
 
-Everything is reversible.
+Everything is reversible, from the menu:
+
+- **Option 2** flashes the original factory firmware (the board keeps the new bootloader, so you can flash again).
+- **Option 3** puts the board back to the **original factory state**: it flashes the factory firmware first, then writes the
+  original factory bootloader. Afterwards the board can **not** be flashed over CAN until option 1 replaces the bootloader again.
+  The same power-loss warning applies (about 2 seconds).
+
+Without the menu:
 
 ```bash
 cd ~/wm-load-cell-mcu/rpi
-
-# firmware back to factory
-bash 2_flash_app_can.sh --factory
-
-# bootloader back to factory (do this last: with the factory bootloader, CAN flashing is gone again)
-UUID=$(grep -rhA8 '^\[mcu CELL\]' ~/printer_data/config | awk -F': *' '/canbus_uuid/{print $2; exit}' | tr -d ' \r')
-sudo systemctl stop klipper
-~/klippy-env/bin/python tools/cell_bl_soft.py $UUID write firmware/KLP_CELL_WM_ZRU_20251223_162212_original_bootloader.bin
-sudo systemctl start klipper
+bash 2_flash_app_can.sh --factory               # original firmware only
+bash 4_restore_factory_bootloader.sh            # original firmware + original bootloader (asks twice)
+bash 4_restore_factory_bootloader.sh --dry-run  # only check, change nothing
 ```
 
 ## Rescue with a probe
@@ -207,6 +208,7 @@ Both scripts save the whole flash to `~/cell-backup-DATE/` first.
 |---|---|
 | `rpi/install.sh` | The menu |
 | `rpi/2_flash_app_can.sh` | Checks, replaces the bootloader if needed, flashes over CAN |
+| `rpi/4_restore_factory_bootloader.sh` | Puts the board back to the original factory firmware and bootloader |
 | `rpi/tools/cell_bl_soft.py` | Replaces the bootloader in software (`probe`, `trial`, `write FILE`) |
 | `rpi/tools/flashtool.py` | The factory CAN flash tool (Katapult, unchanged copy) |
 | `rpi/firmware/KLP_CELL_WM_ZRU_RPI_V2_20261117.bin` | V2 firmware |
@@ -226,7 +228,7 @@ Tested on one board and one printer (2026-11-18), with a probe wired as a safety
 
 - From the factory state (factory bootloader and factory firmware): bootloader replaced in software, V2 flashed over CAN.
 - Factory firmware flashed over CAN with the new bootloader.
-- Original bootloader written back in software, then everything again.
+- Original bootloader written back in software (menu option 3), then everything again.
 - A probe confirmed bootloader and firmware byte for byte at the end.
 
 Not tested: other boards, other firmware versions, a power loss during the bootloader write.

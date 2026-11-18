@@ -16,6 +16,7 @@ WHAT IS IN HERE
   bootloader_source/   config, patch and commit of that bootloader (CanBoot is GPLv3, source is yours)
   tools/flashtool.py   the factory flash tool (Katapult flashtool, GPLv3, Eric Callahan), unchanged copy
   install.sh                  menu: 1) flash V2 over CAN, 2) flash factory over CAN (runs 2_flash_app_can.sh)
+  4_restore_factory_bootloader.sh  menu option 3: original firmware + original bootloader, in software
   2_flash_app_can.sh          flash over CAN from the printer's Raspberry Pi, no extra hardware
   tools/cell_bl_soft.py       replaces the bootloader in software (used by 2_flash_app_can.sh)
   1_write_bootloader_swd.sh   rescue only: write a bootloader over SWD with a Pico
@@ -34,6 +35,7 @@ HOW IT WORKS
 
 HOW TO FLASH
   bash install.sh                menu: 1) flash V2   2) flash the original factory firmware
+                                       3) restore the original (factory firmware + original bootloader)
   or directly:
   bash 2_flash_app_can.sh --dry-run        checks only, changes nothing (Klipper stops for a few seconds)
   bash 2_flash_app_can.sh                  flash V2

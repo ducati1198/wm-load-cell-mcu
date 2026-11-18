@@ -1,22 +1,22 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.12-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.13-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
 **Where is the board?** The load cell MCU board (`[mcu CELL]` in Klipper) is located **under the heated bed**. It is the board that reads the load cell used by the tool setter and the nozzle touch (offset calibration). This repo is only for that board. Nothing here changes the main board, the toolhead boards or the screen board.
 
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
-- **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
+- **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi, or from the WonderMaker factory screen board, over the normal CAN cable.
 
-**Version 1.0.12** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.13** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
 > **Use this at your own risk. The author (ducati1198) is not responsible for any damage**, including a load
 > cell board that no longer starts, a damaged printer, lost prints, lost data or loss of warranty. This is a
 > community project. It is **not** from WonderMaker and has no support from them. It comes with no warranty
-> of any kind (see the GPLv3 licence). It was tested on **one** board only (a ZR Ultra-S).
+> of any kind (see the GPLv3 licence). It was tested on **one** board only (a ZR Ultra-S), driven from a Raspberry Pi and from the factory screen board.
 >
 > ### 🔌 Do not lose power while it writes
 >
@@ -43,7 +43,9 @@ V2 (`KLP_CELL_WM_ZRU_RPI_V2_20261117`) waits for a fresh sample before it reads.
 | On the test printer | Factory firmware | V2 |
 |---|---|---|
 | Broken reads, no motion | about 20 in 1900 | 0 in 5200 |
-| Retries in a full offset run (240 touches) | about 19 | 0 |
+| Retries in a full offset run (240 touches) | about 19 in one run, 5 in another | 0 in two runs |
+
+*(The retry numbers of the factory firmware were counted from the console during the runs; the nozzle tips were not checked for residue in those runs. The broken-read test needs no nozzle and is the better number.)*
 
 V2 is the factory firmware with that one change. Nothing else is different.
 
@@ -61,7 +63,7 @@ bootloader with one that uses PA11/PA12 (same CAN id as before). After that, fla
 
 | Printer | Status |
 |---|---|
-| WonderMaker **ZR Ultra-S** | Tested (one printer, run by a Raspberry Pi) |
+| WonderMaker **ZR Ultra-S** | Tested (one printer, from a Raspberry Pi and from the factory screen board) |
 | WonderMaker **ZR Ultra** | Meant to work too, **not tested**. The tool checks the firmware name, the chip and the flash size and stops without changing anything if the board is not the one it knows. |
 
 ## What you need
@@ -73,7 +75,7 @@ bootloader with one that uses PA11/PA12 (same CAN id as before). After that, fla
 - The load cell board running `KLP_CELL_WM_ZRU_20251223_162212` or V2. The tool stops by itself on anything else.
 - The printer idle, heaters off. Do not start this during a print.
 
-The factory screen board uses the same `install.sh` (no separate folder). Tested there: install from the factory state works (see the warning below: it is slower).
+The factory screen board uses the same `install.sh` (no separate folder). Tested there: all menu options work (see the warning below: it is slower).
 
 ---
 
@@ -91,7 +93,7 @@ If you run this on the **WonderMaker factory screen board** (the factory image):
 | **Password** | `TM88888` |
 
 - Connect with `ssh t13dp@<ip of the screen board>`, or use the board's own keyboard and screen.
-- The install asks for this password **one time**, for `sudo`.
+- The install asks for this password **one time**, for `sudo` (stop and start Klipper), and keeps it for all steps. If your user is not in the `sudo` group yet, the install adds it to the group by itself (it takes effect at the next login).
 - If you changed the password, use yours.
 
 ## Install with the menu
@@ -122,7 +124,18 @@ bash install.sh
 
 ![The install.sh menu](docs/menu.png)
 
-Choose `1` to install V2. (`2` flashes the factory firmware, `3` puts the board back to the original factory state, see [Way back](#way-back).) The script then:
+Choose `1` to install V2. The menu:
+
+| Key | What |
+|---|---|
+| `1` | Flash V2 |
+| `2` | Flash the original factory firmware |
+| `3` | Put the board back to the original factory state (see [Way back](#way-back)) |
+| `b` | Check which bootloader the board has now (read only, Klipper stops for about 30 seconds) |
+| `u` | Update: check GitHub, update this folder, update the firmware (see [Update](#update-the-repo-it-is-already-on-your-pi)) |
+| `q` | Quit |
+
+Options `1`, `2`, `3` and `u` ask for the `sudo` password once, if it is needed. The script then:
 
 1. checks the files, the CAN id and that the printer is not printing;
 2. stops Klipper and looks which bootloader is on the board;
@@ -143,7 +156,7 @@ bash install.sh
 
 **The easy way:** run `bash install.sh` and type `u`. It checks the version on GitHub, updates this folder (`git pull`, or a fresh download if you did not use git) and then offers the newest firmware if the board does not run it yet. If a newer version is on GitHub, the menu header says so.
 
-The menu header also shows which **bootloader** is on the board (NEW or FACTORY) and when it was checked. Type `b` to check it now (read only, Klipper stops for about 30 seconds).
+The menu header also shows which **bootloader** is on the board (NEW or FACTORY) and when it was checked. The scripts remember it in `.bootloader-state` (not part of the repo). Type `b` to check it now (read only, Klipper stops for about 30 seconds).
 
 ![Example: the update section of install.sh](docs/update.png)
 
@@ -194,7 +207,7 @@ bash 2_flash_app_can.sh               # flash V2
 bash 2_flash_app_can.sh --factory     # flash the original factory firmware
 ```
 
-Options: `--bin FILE` (another application file), `--uuid ID` (CAN id by hand),
+Options: `--check` (only show which bootloader the board has), `--yes` (skip the question, for scripts), `--bin FILE` (another application file), `--uuid ID` (CAN id by hand),
 `CFGDIR=/path` in front of the command if your config is not in `~/printer_data/config`.
 
 ## Fully by hand
@@ -236,7 +249,7 @@ SWD probe can bring it back (see [Rescue](#rescue-with-a-probe)).
 
 - Do not touch the printer while it writes.
 - If the tool says the read-back differs, it writes again by itself. Never power off in between.
-- The old bootloader is saved to `~/wm-load-cell-mcu-backups/cell-bootloader-before-DATE.bin` first.
+- The old bootloader is saved to `~/wm-load-cell-mcu-backups/cell-bootloader-before-DATE.bin` first (all backups of this repo go into that one folder).
 - This happens once per board. Later flashes do not touch the bootloader.
 
 ## Way back
@@ -279,6 +292,12 @@ Both scripts save the whole flash to `~/wm-load-cell-mcu-backups/cell-backup-DAT
 | Path | What |
 |---|---|
 | `install.sh` (main folder) | The menu |
+| `VERSION`, `CHANGELOG.md` | The version and what changed |
+| `rpi/install.sh` | Only forwards to `install.sh`, so that an update from an old version (before 1.0.6) still works |
+| `.github/workflows/release.yml` | Makes the GitHub release when `VERSION` changes |
+| `docs/` | The pictures in this README |
+| `zr-ultra/lib_sudo.sh` | Asks for the `sudo` password once, remembers the bootloader state |
+| `zr-ultra/firmware/LATEST` | Name of the newest patched firmware (the update uses it) |
 | `zr-ultra/2_flash_app_can.sh` | Checks, replaces the bootloader if needed, flashes over CAN |
 | `zr-ultra/4_restore_factory_bootloader.sh` | Puts the board back to the original factory firmware and bootloader |
 | `zr-ultra/tools/cell_bl_soft.py` | Replaces the bootloader in software (`probe`, `trial`, `write FILE`) |
@@ -302,6 +321,8 @@ Tested on one board and one printer (2026-11-18), with a probe wired as a safety
 - Factory firmware flashed over CAN with the new bootloader.
 - Original bootloader written back in software (menu option 3), then everything again.
 - A probe confirmed bootloader and firmware byte for byte at the end.
+- From the **factory screen board** (same board, same printer): menu options `1`, `2`, `3`, `u` (also from the factory state), `b`, and answering `no`. The one-time `sudo` password and the group add were run by the printer's owner.
+- The update (`u`) was tested through several versions with `git pull`.
 
 Not tested: other boards, other firmware versions, a power loss during the bootloader write.
 If you try it, please report what your board said, good or bad.

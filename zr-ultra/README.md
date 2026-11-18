@@ -2,7 +2,7 @@ WonderMaker ZR Ultra-S and ZR Ultra  -  load cell board (CELL) firmware V2 and f
 ===================================================================================
 
 Credit: the idea and the first steps come from ducati1198 (Discord, GitHub name "ducati1198").
-Thank you. Everything here was tested on a WonderMaker ZR Ultra-S run by a Raspberry Pi (2026-11-18).
+Thank you. Everything here was tested on a WonderMaker ZR Ultra-S, from a Raspberry Pi and from the WonderMaker factory screen board (2026-11-18).
 
 WHAT IS IN HERE
   firmware/KLP_CELL_WM_ZRU_20251223_162212.bin
@@ -15,9 +15,11 @@ WHAT IS IN HERE
         a new bootloader (CanBoot, 3798 bytes) that talks CAN on the pins the board really uses (PA11/PA12).
   bootloader_source/   config, patch and commit of that bootloader (CanBoot is GPLv3, source is yours)
   tools/flashtool.py   the factory flash tool (Katapult flashtool, GPLv3, Eric Callahan), unchanged copy
-  install.sh                  menu: 1) flash V2 over CAN, 2) flash factory over CAN (runs 2_flash_app_can.sh)
+  ../install.sh               the menu (in the main folder of the repo): 1) V2  2) factory  3) restore  b) check bootloader  u) update
   4_restore_factory_bootloader.sh  menu option 3: original firmware + original bootloader, in software
-  2_flash_app_can.sh          flash over CAN from the printer's Raspberry Pi, no extra hardware
+  2_flash_app_can.sh          flash over CAN from the printer's Raspberry Pi or the factory screen board, no extra hardware
+  lib_sudo.sh                 asks for the sudo password once; remembers the bootloader state
+  firmware/LATEST             name of the newest patched firmware
   tools/cell_bl_soft.py       replaces the bootloader in software (used by 2_flash_app_can.sh)
   1_write_bootloader_swd.sh   rescue only: write a bootloader over SWD with a Pico
   3_flash_app_swd.sh          rescue only: write the application over SWD with a Pico
@@ -34,9 +36,11 @@ HOW IT WORKS
   NO Pico, NO wires, NO soldering.
 
 HOW TO FLASH
-  bash install.sh                menu: 1) flash V2   2) flash the original factory firmware
+  bash ../install.sh             menu: 1) flash V2   2) flash the original factory firmware
                                        3) restore the original (factory firmware + original bootloader)
-  or directly:
+                                       b) check the bootloader   u) update (GitHub version, git pull, firmware)
+  or directly (from this folder):
+  bash 2_flash_app_can.sh --check          only shows which bootloader the board has (read only)
   bash 2_flash_app_can.sh --dry-run        checks only, changes nothing (Klipper stops for a few seconds)
   bash 2_flash_app_can.sh                  flash V2
   bash 2_flash_app_can.sh --factory        way back: factory application
@@ -77,6 +81,7 @@ TEST STATUS (2026-11-18, ONE board, one printer, a Pico wired as safety net)
     bootloader in software (1.2 s, read back identical on the first attempt) and flashed V2 over CAN: OK.
   - install.sh option 2 (factory application) with the new bootloader already there: OK.
   - Bootloader way back in software (original bootloader written again), then option 1 again: OK.
+  - From the factory screen board: options 1, 2, 3, u, b and answering no: OK.
   - After the last run the Pico confirmed bootloader and application byte for byte.
-  - The software bootloader write was done 5 times in total, every time right on the first attempt.
+  - The software bootloader write was done many times, every time right on the first attempt (1.2 s on a Raspberry Pi, about 4 s on the factory screen board).
   Not tested: other boards, other firmware versions, a power loss during the write.

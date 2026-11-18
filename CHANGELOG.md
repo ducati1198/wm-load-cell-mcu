@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.13 - 2026-11-18
+- README and `zr-ultra/README.md` checked against the repo and corrected (screen board, menu keys, files, tests, retry numbers). `MD5SUMS` and `SHA256SUMS` refreshed: they still had the checksum of the old `cell_bl_soft.py`.
+
 ## 1.0.12 - 2026-11-18
 - All backups now go into one folder, `~/wm-load-cell-mcu-backups/`, not into the home folder: the bootloader backup (`cell-bootloader-before-DATE.bin`) and the full-flash backups of the SWD rescue scripts (`cell-backup-DATE/`).
 

@@ -15,7 +15,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 LATEST="$(tr -d ' \r\n' < "$HERE/firmware/LATEST" 2>/dev/null)"; LATEST="${LATEST:-KLP_CELL_WM_ZRU_RPI_V2_20261117}"
 V2="$HERE/firmware/$LATEST.bin"; V2_MD5="$(grep " firmware/$LATEST.bin\$" "$HERE/MD5SUMS" 2>/dev/null | cut -d' ' -f1)"
 FAC="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212.bin"; FAC_MD5="e1e4fbc247a306d7854640f22cb6409d"
-BIN="$V2"; WANT="$V2_MD5"; DRY=0; UUID=""; YES=0; ASKED=0
+BIN="$V2"; WANT="$V2_MD5"; DRY=0; UUID=""; YES=0; ASKED=0; CHECK=0
 FT="$HERE/tools/flashtool.py"
 MOON="http://127.0.0.1:7125"
 CFGDIR="${CFGDIR:-$HOME/printer_data/config}"
@@ -23,6 +23,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1 ;;
     --yes) YES=1 ;;
+    --check) CHECK=1 ;;
     --factory) BIN="$FAC"; WANT="$FAC_MD5" ;;
     --bin) shift; BIN="$1"; WANT="" ;;
     --uuid) shift; UUID="$1" ;;
@@ -67,6 +68,8 @@ back() { sudo systemctl start klipper; }
 say "checking the bootloader of the board"
 PROBE="$(timeout 60 "$KPY" "$SOFT" "$UUID" probe 2>&1)"; echo "$PROBE" | sed 's/^/   /'
 KIND="$(echo "$PROBE" | sed -n 's/^BOOTLOADER: //p')"
+save_bl "$KIND"
+if [ $CHECK -eq 1 ]; then back; say "bootloader of the board: ${KIND:-unknown} (nothing was changed)"; exit 0; fi
 case "$KIND" in
   new) say "the CAN bootloader is already on the board" ;;
   factory)
@@ -83,6 +86,7 @@ case "$KIND" in
     if [ $YES -eq 0 ]; then read -r -p "Replace the bootloader AND flash $(basename "$BIN")? (yes/no) [no]: " A; [[ "${A,,}" == "yes" || "${A,,}" == "y" ]] || { back; die "cancelled, nothing changed"; }; fi; ASKED=1
     timeout 120 "$KPY" "$SOFT" "$UUID" write "$NEWBL"; RC=$?
     [ $RC -eq 0 ] || { back; die "the bootloader was not replaced (see the lines above). If it says DO NOT power off: run this script again now."; }
+    save_bl new
     ;;
   *)
     # the application did not answer or the bootloader is not a known one: maybe the board already sits in the bootloader

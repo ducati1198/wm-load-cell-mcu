@@ -6,6 +6,7 @@
 #   1) Flash the newest patched firmware (V2)
 #   2) Flash the original factory firmware (KLP_CELL_WM_ZRU_20251223_162212)
 #   3) Put the board back to the original factory state (factory firmware + original factory bootloader)
+#   b) Check which bootloader the board has (read only)
 #   u) Update: check the version on GitHub, update this folder (git pull), then offer the newest firmware
 #
 # No extra hardware. If the board still has the factory bootloader, 2_flash_app_can.sh replaces it in software
@@ -39,6 +40,15 @@ current() {   # firmware name of the board; waits up to ~30 s while Klipper is s
     systemctl is-active --quiet klipper 2>/dev/null || return   # Klipper is not running: nothing to wait for
     sleep 2
   done
+}
+bl_state() {   # last known bootloader of the board (written by the scripts after a check, install or restore)
+  local K T; read -r K T < "$ROOT/.bootloader-state" 2>/dev/null || { echo "not checked yet (type b to check)"; return; }
+  T="$(date -d "@$T" '+%Y-%m-%d %H:%M' 2>/dev/null)"
+  case "$K" in
+    new)     echo "NEW (CAN bootloader, PA11/PA12), checked $T" ;;
+    factory) echo "FACTORY (original, not reachable over CAN), checked $T" ;;
+    *)       echo "not checked yet (type b to check)" ;;
+  esac
 }
 newer() { [ -n "$1" ] && [ "$1" != "$2" ] && [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ]; }   # is $1 newer than $2
 
@@ -91,11 +101,13 @@ while true; do
   echo "=========================================================="
   echo " WonderMaker load cell board (CELL) - flash over CAN   v$VER"
   echo " Board firmware now: ${CUR:-unknown (Klipper not running?)}"
+  echo " Bootloader on the board: $(bl_state)"
   if newer "$REMOTE" "$VER"; then echo " NEW VERSION ON GITHUB: v$REMOTE  (type u to update)"; fi
   echo "=========================================================="
   echo "  1) Flash V2        ${NEWFW:-KLP_CELL_WM_ZRU_RPI_V2_20261117}"
   echo "  2) Flash factory   KLP_CELL_WM_ZRU_20251223_162212"
   echo "  3) Restore original (factory firmware + original bootloader)"
+  echo "  b) Check the bootloader of the board now (read only, Klipper stops for about 30 s)"
   echo "  u) Update (check GitHub, update this folder, update the firmware)"
   echo "  q) Quit"
   read -r -p "Choose: " C
@@ -103,8 +115,9 @@ while true; do
     1) ask_sudo; bash "$CAN" ;;
     2) ask_sudo; bash "$CAN" --factory ;;
     3) ask_sudo; bash "$ZR/4_restore_factory_bootloader.sh" ;;
+    b|B) ask_sudo; bash "$CAN" --check ;;
     u|U) ask_sudo; do_update; REMOTE="$(remote_version)" ;;
     q|Q|"") exit 0 ;;
-    *) echo "Please type 1, 2, 3, u or q." ;;
+    *) echo "Please type 1, 2, 3, b, u or q." ;;
   esac
 done

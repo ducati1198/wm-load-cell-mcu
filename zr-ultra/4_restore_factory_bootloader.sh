@@ -71,6 +71,7 @@ sudo systemctl stop klipper; sleep 2
 back() { sudo systemctl start klipper; }
 PROBE="$(timeout 60 "$KPY" "$SOFT" "$UUID" probe 2>&1)"; echo "$PROBE" | sed 's/^/   /'
 KIND="$(echo "$PROBE" | sed -n 's/^BOOTLOADER: //p')"
+save_bl "$KIND"
 case "$KIND" in
   factory) back; say "the board already has the original factory bootloader. Nothing to do."; exit 0 ;;
   new) ;;
@@ -79,6 +80,7 @@ esac
 if [ $DRY -eq 1 ]; then say "dry run: would now write $(basename "$OLDBL")"; back; exit 0; fi
 timeout 120 "$KPY" "$SOFT" "$UUID" write "$OLDBL"; RC=$?
 back
+[ $RC -eq 0 ] && save_bl factory
 [ $RC -eq 0 ] || die "the bootloader was not replaced (see the lines above). If it says DO NOT power off: run this script again now."
 for i in $(seq 1 15); do sleep 3; N="$(cur)"; [ -n "$N" ] && break; done
 say "done. Board firmware now: ${N:-not reported yet (look in Fluidd)}. The board has the original factory bootloader again."

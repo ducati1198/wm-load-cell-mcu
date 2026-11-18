@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.11 - 2026-11-18
+- The menu header shows which bootloader is on the board (NEW or FACTORY, with the time it was checked). It is remembered in `.bootloader-state` after every check, install and restore.
+- New menu option `b`: check the bootloader now (read only; Klipper stops for about 30 s). Also `2_flash_app_can.sh --check`.
+
 ## 1.0.10 - 2026-11-18
 - The confirmation question now reads `(yes/no) [no]`: pressing Enter, or anything except yes or y, means no and nothing is changed.
 

@@ -1,6 +1,6 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.10-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.11-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
@@ -9,7 +9,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 
-**Version 1.0.10** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.11** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -142,6 +142,8 @@ bash install.sh
 ## Update the repo (it is already on your Pi)
 
 **The easy way:** run `bash install.sh` and type `u`. It checks the version on GitHub, updates this folder (`git pull`, or a fresh download if you did not use git) and then offers the newest firmware if the board does not run it yet. If a newer version is on GitHub, the menu header says so.
+
+The menu header also shows which **bootloader** is on the board (NEW or FACTORY) and when it was checked. Type `b` to check it now (read only, Klipper stops for about 30 seconds).
 
 ![Example: the update section of install.sh](docs/update.png)
 

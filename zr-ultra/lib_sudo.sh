@@ -14,3 +14,8 @@ ask_sudo() {
   # keep the sudo ticket alive while this script runs; ends by itself when the script ends
   ( while kill -0 "$$" 2>/dev/null; do sudo -n true 2>/dev/null; sleep 40; done ) >/dev/null 2>&1 &
 }
+
+# remember which bootloader the board has (new | factory), for the menu header. File: <repo>/.bootloader-state
+save_bl() {
+  case "${1:-}" in new|factory) printf '%s %s\n' "$1" "$(date +%s)" > "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.bootloader-state" 2>/dev/null || true ;; esac
+}

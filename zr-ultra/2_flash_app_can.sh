@@ -80,7 +80,7 @@ case "$KIND" in
       say "dry run: would replace the bootloader with $(basename "$NEWBL"), then flash $(basename "$BIN")"
       back; exit 0
     fi
-    if [ $YES -eq 0 ]; then read -r -p "Type yes to replace the bootloader AND flash $(basename "$BIN"): " A; [ "$A" = "yes" ] || { back; die "cancelled, nothing changed"; }; fi; ASKED=1
+    if [ $YES -eq 0 ]; then read -r -p "Replace the bootloader AND flash $(basename "$BIN")? (yes/no) [no]: " A; [[ "${A,,}" == "yes" || "${A,,}" == "y" ]] || { back; die "cancelled, nothing changed"; }; fi; ASKED=1
     timeout 120 "$KPY" "$SOFT" "$UUID" write "$NEWBL"; RC=$?
     [ $RC -eq 0 ] || { back; die "the bootloader was not replaced (see the lines above). If it says DO NOT power off: run this script again now."; }
     ;;
@@ -101,7 +101,7 @@ if [ $DRY -eq 1 ]; then
   echo "   $PY $FT -i can0 -f $BIN -u $UUID -v"
   back; exit 0
 fi
-if [ $YES -eq 0 ] && [ $ASKED -eq 0 ]; then read -r -p "Type yes to flash $(basename "$BIN"): " A; [ "$A" = "yes" ] || { back; die "cancelled (the firmware was not changed)"; }; fi
+if [ $YES -eq 0 ] && [ $ASKED -eq 0 ]; then read -r -p "Flash $(basename "$BIN")? (yes/no) [no]: " A; [[ "${A,,}" == "yes" || "${A,,}" == "y" ]] || { back; die "cancelled (the firmware was not changed)"; }; fi
 
 L="$(mktemp -d)"
 say "1/4 jump into the bootloader"

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.10 - 2026-11-18
+- The confirmation question now reads `(yes/no) [no]`: pressing Enter, or anything except yes or y, means no and nothing is changed.
+
 ## 1.0.9 - 2026-11-18
 - The wait for Klipper after a flash or a cancel now follows the Klipper service (the 1.0.8 check was not enough).
 

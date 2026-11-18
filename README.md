@@ -1,6 +1,6 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.9-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.10-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
@@ -9,7 +9,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 
-**Version 1.0.9** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.10** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -126,8 +126,8 @@ Choose `1` to install V2. (`2` flashes the factory firmware, `3` puts the board 
 
 1. checks the files, the CAN id and that the printer is not printing;
 2. stops Klipper and looks which bootloader is on the board;
-3. if it is the factory bootloader: explains the risk and asks **once** for `yes`; then it replaces the bootloader (1 to 4 seconds), flashes the firmware over CAN and verifies it;
-4. if the CAN bootloader is already on the board, it asks once for `yes` and flashes;
+3. if it is the factory bootloader: explains the risk and asks **once** (`yes/no`, Enter means no); then it replaces the bootloader (1 to 4 seconds), flashes the firmware over CAN and verifies it;
+4. if the CAN bootloader is already on the board, it asks once (`yes/no`, Enter means no) and flashes;
 5. starts Klipper and prints the firmware name the board reports.
 
 If you do not want to install `git`, download the files with `curl` instead:

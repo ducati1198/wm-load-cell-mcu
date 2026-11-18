@@ -53,8 +53,8 @@ echo
 
 ask_sudo
 if [ $DRY -eq 0 ]; then
-  read -r -p "Type yes to put the board back to the original factory state (firmware and bootloader): " A
-  [ "$A" = "yes" ] || die "cancelled, nothing changed"
+  read -r -p "Put the board back to the original factory state (firmware and bootloader)? (yes/no) [no]: " A
+  [[ "${A,,}" == "yes" || "${A,,}" == "y" ]] || die "cancelled, nothing changed"
 fi
 
 # 1. the factory firmware first (needs the CAN bootloader, so it must be done BEFORE the bootloader is put back)

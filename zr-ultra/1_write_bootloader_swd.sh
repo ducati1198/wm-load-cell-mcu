@@ -56,7 +56,7 @@ if [ $DRY -eq 1 ]; then
 fi
 
 echo "This stops Klipper for about a minute. Heaters off, printer idle."
-read -r -p "Type yes to write $(basename "$BIN") : " A; [ "$A" = "yes" ] || die "cancelled, nothing changed"
+read -r -p "Write $(basename "$BIN")? (yes/no) [no]: " A; [[ "${A,,}" == "yes" || "${A,,}" == "y" ]] || die "cancelled, nothing changed"
 mkdir -p "$OUT"
 sudo systemctl stop klipper; sleep 2
 say "1/3 backup of the whole flash to $OUT/cell_512k_backup.bin"

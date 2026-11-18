@@ -50,7 +50,7 @@ if [ $DRY -eq 1 ]; then
   [ $RC -eq 0 ] && echo "The probe sees the board. Nothing was written." || echo "The probe does NOT see the board."
   exit $RC
 fi
-read -r -p "Heaters off, printer idle. Type yes to flash: " A; [ "$A" = "yes" ] || die "cancelled, nothing changed"
+read -r -p "Heaters off, printer idle. Flash? (yes/no) [no]: " A; [[ "${A,,}" == "yes" || "${A,,}" == "y" ]] || die "cancelled, nothing changed"
 mkdir -p "$OUT"; sudo systemctl stop klipper; sleep 2
 say "1/3 backup of the whole flash to $OUT/cell_512k_backup.bin"
 "${OCD[@]}" -c init -c "dump_image $OUT/cell_512k_backup.bin 0x08000000 0x80000" -c shutdown \

@@ -73,11 +73,22 @@ bootloader with one that uses PA11/PA12 (same CAN id as before). After that, fla
 - The load cell board running `KLP_CELL_WM_ZRU_20251223_162212` or V2. The tool stops by itself on anything else.
 - The printer idle, heaters off. Do not start this during a print.
 
-**Factory screen board login.** On the WonderMaker factory screen board image, the factory login is: user `t13dp`, password `TM88888`. Connect with `ssh t13dp@<ip of the screen board>` (or on its own keyboard and screen). The install asks for this password once, for `sudo`. If you changed the password, use yours.
-
-The factory screen board is **not** supported yet (folder `factory-board/` will come after it is tested).
+The factory screen board uses the same `install.sh` (no separate folder). The read-only checks on it passed; the full flash test on that board is still open.
 
 ---
+
+## Factory screen board login
+
+If you run this on the **WonderMaker factory screen board** (the factory image):
+
+| | |
+|---|---|
+| **Username** | `t13dp` |
+| **Password** | `TM88888` |
+
+- Connect with `ssh t13dp@<ip of the screen board>`, or use the board's own keyboard and screen.
+- The install asks for this password **one time**, for `sudo`.
+- If you changed the password, use yours.
 
 ## Install with the menu
 

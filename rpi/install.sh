@@ -18,6 +18,7 @@ MOON="http://127.0.0.1:7125"
 RAW="https://raw.githubusercontent.com/ducati1198/wm-load-cell-mcu/main"
 API="https://api.github.com/repos/ducati1198/wm-load-cell-mcu/contents"
 TARBALL="https://github.com/ducati1198/wm-load-cell-mcu/archive/refs/heads/main.tar.gz"
+. "$HERE/lib_sudo.sh"
 [ -f "$CAN" ] || { echo "2_flash_app_can.sh is missing next to install.sh"; exit 1; }
 
 local_version()  { tr -d ' \r\n' < "$ROOT/VERSION" 2>/dev/null || echo "?"; }
@@ -92,10 +93,10 @@ while true; do
   echo "  q) Quit"
   read -r -p "Choose: " C
   case "$C" in
-    1) bash "$CAN" ;;
-    2) bash "$CAN" --factory ;;
-    3) bash "$HERE/4_restore_factory_bootloader.sh" ;;
-    u|U) do_update; REMOTE="$(remote_version)" ;;
+    1) ask_sudo; bash "$CAN" ;;
+    2) ask_sudo; bash "$CAN" --factory ;;
+    3) ask_sudo; bash "$HERE/4_restore_factory_bootloader.sh" ;;
+    u|U) ask_sudo; do_update; REMOTE="$(remote_version)" ;;
     q|Q|"") exit 0 ;;
     *) echo "Please type 1, 2, 3, u or q." ;;
   esac

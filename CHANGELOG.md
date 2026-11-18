@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4 - 2026-11-18
+- The install, the update and the restore ask for the sudo password **one time** at the start and keep it for all steps (stop Klipper, flash, start Klipper). New `rpi/lib_sudo.sh`. Needed on boards where `sudo` asks for a password (for example the factory screen board).
+
 ## 1.0.3 - 2026-11-18
 - `install.sh` menu option `u` (Update): checks the version on GitHub, updates this folder (`git pull`, or a new download if you did not use git), then offers the newest firmware if the board does not run it. The menu header shows when a new version is on GitHub.
 - Only ONE confirmation (`yes`) in the install and in the restore (it used to ask twice).

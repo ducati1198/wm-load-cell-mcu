@@ -57,6 +57,7 @@ NEWBL="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212_new_bootloader.bin"
 KPY="$HOME/klippy-env/bin/python"; [ -x "$KPY" ] || KPY=python3
 PY=python3
 
+. "$HERE/lib_sudo.sh"; ask_sudo
 echo
 echo "Klipper is stopped now for the check (and for the flash). Heaters off, printer idle."
 sudo systemctl stop klipper; sleep 2

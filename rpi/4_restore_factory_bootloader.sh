@@ -9,6 +9,7 @@
 # 2_flash_app_can.sh / install.sh option 1 replaces the bootloader again.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/lib_sudo.sh"
 OLDBL="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212_original_bootloader.bin"; OLD_MD5="7251e472575b1ff1028d25d4478a7050"
 SOFT="$HERE/tools/cell_bl_soft.py"
 FACTORY_NAME="KLP_CELL_WM_ZRU_20251223_162212"
@@ -50,6 +51,7 @@ echo "      Do NOT touch the printer or the power until it says it is finished."
 echo "      You use this at your own risk; the author is not responsible for any damage."
 echo
 
+ask_sudo
 if [ $DRY -eq 0 ]; then
   read -r -p "Type yes to put the board back to the original factory state (firmware and bootloader): " A
   [ "$A" = "yes" ] || die "cancelled, nothing changed"

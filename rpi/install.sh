@@ -16,12 +16,18 @@ ROOT="$(cd "$HERE/.." && pwd)"
 CAN="$HERE/2_flash_app_can.sh"
 MOON="http://127.0.0.1:7125"
 RAW="https://raw.githubusercontent.com/ducati1198/wm-load-cell-mcu/main"
+API="https://api.github.com/repos/ducati1198/wm-load-cell-mcu/contents"
 TARBALL="https://github.com/ducati1198/wm-load-cell-mcu/archive/refs/heads/main.tar.gz"
 [ -f "$CAN" ] || { echo "2_flash_app_can.sh is missing next to install.sh"; exit 1; }
 
 local_version()  { tr -d ' \r\n' < "$ROOT/VERSION" 2>/dev/null || echo "?"; }
 latest_fw()      { tr -d ' \r\n' < "$HERE/firmware/LATEST" 2>/dev/null; }
-remote_version() { curl -fsS --max-time 4 "$RAW/VERSION?t=$(date +%s)" 2>/dev/null | tr -d ' \r\n'; }   # ?t= : GitHub caches the plain address for a few minutes
+remote_version() {   # the GitHub API is always current; the raw address is cached for some minutes, so it is only the fallback
+  local V
+  V="$(curl -fsS --max-time 5 -H "Accept: application/vnd.github.raw+json" "$API/VERSION" 2>/dev/null | tr -d ' \r\n')"
+  [ -n "$V" ] || V="$(curl -fsS --max-time 5 "$RAW/VERSION" 2>/dev/null | tr -d ' \r\n')"
+  echo "$V"
+}
 current() {
   curl -s --max-time 5 "$MOON/printer/objects/query?mcu%20CELL" 2>/dev/null \
     | python3 -c 'import sys,json;print(json.load(sys.stdin)["result"]["status"]["mcu CELL"]["mcu_version"])' 2>/dev/null

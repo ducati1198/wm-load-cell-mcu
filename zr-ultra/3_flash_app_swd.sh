@@ -14,7 +14,7 @@ V2="$HERE/firmware/KLP_CELL_WM_ZRU_RPI_V2_20261117.bin";  V2_MD5="a202b3e1a7cab0
 FAC="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212.bin"; FAC_MD5="e1e4fbc247a306d7854640f22cb6409d"
 BIN="$V2"; WANT="$V2_MD5"; DRY=0
 MOON="http://127.0.0.1:7125"
-OUT="${OUT:-$HOME/cell-backup-$(date +%Y%m%d-%H%M%S)}"
+OUT="${OUT:-$HOME/wm-load-cell-mcu-backups/cell-backup-$(date +%Y%m%d-%H%M%S)}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1 ;;

@@ -14,7 +14,7 @@ NEW="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212_new_bootloader.bin"; NEW_MD5
 OLD="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212_original_bootloader.bin"; OLD_MD5="7251e472575b1ff1028d25d4478a7050"
 BIN="$NEW"; WANT="$NEW_MD5"; DRY=0
 MOON="http://127.0.0.1:7125"
-OUT="${OUT:-$HOME/cell-backup-$(date +%Y%m%d-%H%M%S)}"
+OUT="${OUT:-$HOME/wm-load-cell-mcu-backups/cell-backup-$(date +%Y%m%d-%H%M%S)}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1 ;;

@@ -57,14 +57,14 @@ WAY BACK  (everything is reversible)
                 ~/klippy-env/bin/python tools/cell_bl_soft.py UUID write firmware/KLP_CELL_WM_ZRU_20251223_162212_original_bootloader.bin
                 sudo systemctl start klipper
                 (flash the application you want BEFORE this: with the factory bootloader CAN flashing is gone again)
-  The old bootloader area is saved to ~/cell-bootloader-before-DATE.bin before every bootloader write.
+  The old bootloader area is saved to ~/wm-load-cell-mcu-backups/cell-bootloader-before-DATE.bin before every bootloader write.
 
 RESCUE WITH A PROBE  (only if something went wrong; not needed normally)
   A Raspberry Pi Pico with the "debugprobe" firmware and openocd on the printer's Pi.
   Wires Pico -> SWD pads of the load cell board:  GP2 -> SWCLK,  GP3 -> SWDIO,  GND -> GND  (no 3.3 V wire)
   bash 1_write_bootloader_swd.sh [--factory]     write the new (or the factory) bootloader
   bash 3_flash_app_swd.sh [--factory]            write the application
-  Both save the whole flash to ~/cell-backup-DATE/ first.
+  Both save the whole flash to ~/wm-load-cell-mcu-backups/cell-backup-DATE/ first.
 
 WARNINGS
   - You do this at your own risk. The author (ducati1198) is not responsible for any damage. Nothing here is from WonderMaker.

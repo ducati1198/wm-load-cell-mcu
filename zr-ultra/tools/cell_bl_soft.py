@@ -199,7 +199,8 @@ class Tool:
         if old[:len(new)] == new and old[len(new):] == b"\xff" * (0x1000 - len(new)):
             self.say("this bootloader is already on the board, nothing to do"); return
         self.checks()
-        bk = os.path.expanduser("~/cell-bootloader-before-%s.bin" % time.strftime("%Y%m%d-%H%M%S"))
+        bdir = os.path.expanduser("~/wm-load-cell-mcu-backups"); os.makedirs(bdir, exist_ok=True)
+        bk = os.path.join(bdir, "cell-bootloader-before-%s.bin" % time.strftime("%Y%m%d-%H%M%S"))
         open(bk, "wb").write(self.read(BASE, 0x2000)); self.say("backup of the old bootloader area: " + bk)
         self.unlock()
         try:

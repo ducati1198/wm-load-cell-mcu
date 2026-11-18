@@ -1,6 +1,6 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.11-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.12-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
@@ -9,7 +9,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 
-**Version 1.0.11** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.12** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -236,7 +236,7 @@ SWD probe can bring it back (see [Rescue](#rescue-with-a-probe)).
 
 - Do not touch the printer while it writes.
 - If the tool says the read-back differs, it writes again by itself. Never power off in between.
-- The old bootloader is saved to `~/cell-bootloader-before-DATE.bin` first.
+- The old bootloader is saved to `~/wm-load-cell-mcu-backups/cell-bootloader-before-DATE.bin` first.
 - This happens once per board. Later flashes do not touch the bootloader.
 
 ## Way back
@@ -270,7 +270,7 @@ bash 1_write_bootloader_swd.sh              # write the new bootloader   (--fact
 bash 3_flash_app_swd.sh                     # write V2                   (--factory: the original firmware)
 ```
 
-Both scripts save the whole flash to `~/cell-backup-DATE/` first.
+Both scripts save the whole flash to `~/wm-load-cell-mcu-backups/cell-backup-DATE/` first.
 
 ---
 

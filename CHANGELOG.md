@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.12 - 2026-11-18
+- All backups now go into one folder, `~/wm-load-cell-mcu-backups/`, not into the home folder: the bootloader backup (`cell-bootloader-before-DATE.bin`) and the full-flash backups of the SWD rescue scripts (`cell-backup-DATE/`).
+
 ## 1.0.11 - 2026-11-18
 - The menu header shows which bootloader is on the board (NEW or FACTORY, with the time it was checked). It is remembered in `.bootloader-state` after every check, install and restore.
 - New menu option `b`: check the bootloader now (read only; Klipper stops for about 30 s). Also `2_flash_app_can.sh --check`.

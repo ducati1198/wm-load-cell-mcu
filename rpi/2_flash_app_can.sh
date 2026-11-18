@@ -3,22 +3,26 @@
 # No extra hardware. If the board still has the factory bootloader (which cannot be reached over CAN), it is first
 # replaced in software through the running firmware (tools/cell_bl_soft.py); the script asks before it does that.
 #
-#   bash 2_flash_app_can.sh              flash KLP_CELL_WM_ZRU_RPI_V2_20261117.bin (the V2 firmware)
+#   bash 2_flash_app_can.sh              flash the newest patched firmware (firmware/LATEST, now V2)
 #   bash 2_flash_app_can.sh --factory    way back: flash the original KLP_CELL_WM_ZRU_20251223_162212.bin
 #   bash 2_flash_app_can.sh --bin FILE   flash another application file
+#   bash 2_flash_app_can.sh --yes        do not ask (used by 4_restore_factory_bootloader.sh)
 #   bash 2_flash_app_can.sh --dry-run    check everything and show what it would do, change nothing
 #   bash 2_flash_app_can.sh --uuid ID    CAN id of the board (default: canbus_uuid of [mcu CELL] in the printer config)
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
-V2="$HERE/firmware/KLP_CELL_WM_ZRU_RPI_V2_20261117.bin";  V2_MD5="a202b3e1a7cab0d77c4c78ca65334945"
+# the newest patched firmware is named in firmware/LATEST (so an update of the repo can bring a newer one)
+LATEST="$(tr -d ' \r\n' < "$HERE/firmware/LATEST" 2>/dev/null)"; LATEST="${LATEST:-KLP_CELL_WM_ZRU_RPI_V2_20261117}"
+V2="$HERE/firmware/$LATEST.bin"; V2_MD5="$(grep " firmware/$LATEST.bin\$" "$HERE/MD5SUMS" 2>/dev/null | cut -d' ' -f1)"
 FAC="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212.bin"; FAC_MD5="e1e4fbc247a306d7854640f22cb6409d"
-BIN="$V2"; WANT="$V2_MD5"; DRY=0; UUID=""
+BIN="$V2"; WANT="$V2_MD5"; DRY=0; UUID=""; YES=0; ASKED=0
 FT="$HERE/tools/flashtool.py"
 MOON="http://127.0.0.1:7125"
 CFGDIR="${CFGDIR:-$HOME/printer_data/config}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1 ;;
+    --yes) YES=1 ;;
     --factory) BIN="$FAC"; WANT="$FAC_MD5" ;;
     --bin) shift; BIN="$1"; WANT="" ;;
     --uuid) shift; UUID="$1" ;;
@@ -75,7 +79,7 @@ case "$KIND" in
       say "dry run: would replace the bootloader with $(basename "$NEWBL"), then flash $(basename "$BIN")"
       back; exit 0
     fi
-    read -r -p "Type yes to replace the bootloader: " A; [ "$A" = "yes" ] || { back; die "cancelled, nothing changed"; }
+    if [ $YES -eq 0 ]; then read -r -p "Type yes to replace the bootloader AND flash $(basename "$BIN"): " A; [ "$A" = "yes" ] || { back; die "cancelled, nothing changed"; }; fi; ASKED=1
     timeout 120 "$KPY" "$SOFT" "$UUID" write "$NEWBL"; RC=$?
     [ $RC -eq 0 ] || { back; die "the bootloader was not replaced (see the lines above). If it says DO NOT power off: run this script again now."; }
     ;;
@@ -96,7 +100,7 @@ if [ $DRY -eq 1 ]; then
   echo "   $PY $FT -i can0 -f $BIN -u $UUID -v"
   back; exit 0
 fi
-read -r -p "Type yes to flash $(basename "$BIN"): " A; [ "$A" = "yes" ] || { back; die "cancelled (the firmware was not changed)"; }
+if [ $YES -eq 0 ] && [ $ASKED -eq 0 ]; then read -r -p "Type yes to flash $(basename "$BIN"): " A; [ "$A" = "yes" ] || { back; die "cancelled (the firmware was not changed)"; }; fi
 
 L="$(mktemp -d)"
 say "1/4 jump into the bootloader"

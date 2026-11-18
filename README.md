@@ -1,13 +1,13 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.2-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.3-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 
-**Version 1.0.2** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.3** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -107,8 +107,8 @@ Choose `1` to install V2. (`2` flashes the factory firmware, `3` puts the board 
 
 1. checks the files, the CAN id and that the printer is not printing;
 2. stops Klipper and looks which bootloader is on the board;
-3. if it is the factory bootloader: explains the risk, asks for `yes`, replaces it (about 2 seconds);
-4. asks for `yes`, flashes the firmware over CAN and verifies it;
+3. if it is the factory bootloader: explains the risk and asks **once** for `yes`; then it replaces the bootloader (about 2 seconds), flashes the firmware over CAN and verifies it;
+4. if the CAN bootloader is already on the board, it asks once for `yes` and flashes;
 5. starts Klipper and prints the firmware name the board reports.
 
 If you do not want to install `git`, download the files with `curl` instead:
@@ -122,7 +122,13 @@ bash install.sh
 
 ## Update the repo (it is already on your Pi)
 
-Updating only refreshes the files on the Pi. **It does not change anything on the load cell board.**
+**The easy way:** run `bash install.sh` and type `u`. It checks the version on GitHub, updates this folder (`git pull`, or a fresh download if you did not use git) and then offers the newest firmware if the board does not run it yet. If a newer version is on GitHub, the menu header says so.
+
+![Example: the update section of install.sh](docs/update.png)
+
+*(Example screen; the version numbers and the board firmware depend on your printer.)*
+
+The same by hand: updating only refreshes the files on the Pi. **It does not change anything on the load cell board.**
 Your board keeps the firmware and bootloader it has until you run the menu again.
 
 If you installed with `git clone`:
@@ -226,7 +232,7 @@ Without the menu:
 ```bash
 cd ~/wm-load-cell-mcu/rpi
 bash 2_flash_app_can.sh --factory               # original firmware only
-bash 4_restore_factory_bootloader.sh            # original firmware + original bootloader (asks twice)
+bash 4_restore_factory_bootloader.sh            # original firmware + original bootloader (asks once)
 bash 4_restore_factory_bootloader.sh --dry-run  # only check, change nothing
 ```
 

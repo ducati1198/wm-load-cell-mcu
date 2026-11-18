@@ -50,11 +50,16 @@ echo "      Do NOT touch the printer or the power until it says it is finished."
 echo "      You use this at your own risk; the author is not responsible for any damage."
 echo
 
+if [ $DRY -eq 0 ]; then
+  read -r -p "Type yes to put the board back to the original factory state (firmware and bootloader): " A
+  [ "$A" = "yes" ] || die "cancelled, nothing changed"
+fi
+
 # 1. the factory firmware first (needs the CAN bootloader, so it must be done BEFORE the bootloader is put back)
 if [ "$CUR" != "$FACTORY_NAME" ]; then
   say "step 1: the factory firmware is flashed first (over CAN), because after step 2 CAN flashing no longer works"
   if [ $DRY -eq 1 ]; then bash "$HERE/2_flash_app_can.sh" --factory --dry-run || exit $?
-  else bash "$HERE/2_flash_app_can.sh" --factory || die "the factory firmware was not flashed, nothing else was changed"; fi
+  else bash "$HERE/2_flash_app_can.sh" --factory --yes || die "the factory firmware was not flashed, nothing else was changed"; fi
 else
   say "step 1: the board already runs the factory firmware"
 fi
@@ -70,7 +75,6 @@ case "$KIND" in
   *) back; die "could not identify the bootloader of this board, nothing was changed" ;;
 esac
 if [ $DRY -eq 1 ]; then say "dry run: would now write $(basename "$OLDBL")"; back; exit 0; fi
-read -r -p "Step 2: type yes to put the ORIGINAL factory bootloader back: " A; [ "$A" = "yes" ] || { back; die "cancelled, the bootloader was not changed"; }
 timeout 120 "$KPY" "$SOFT" "$UUID" write "$OLDBL"; RC=$?
 back
 [ $RC -eq 0 ] || die "the bootloader was not replaced (see the lines above). If it says DO NOT power off: run this script again now."

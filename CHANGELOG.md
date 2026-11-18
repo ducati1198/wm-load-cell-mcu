@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - 2026-11-18
+- `install.sh` menu option `u` (Update): checks the version on GitHub, updates this folder (`git pull`, or a new download if you did not use git), then offers the newest firmware if the board does not run it. The menu header shows when a new version is on GitHub.
+- Only ONE confirmation (`yes`) in the install and in the restore (it used to ask twice).
+- `rpi/firmware/LATEST` names the newest patched firmware, so an update can bring a newer one.
+
 ## 1.0.2 - 2026-11-18
 - README: update section simplified (`git pull`). Same firmware, bootloader and scripts as 1.0.0.
 

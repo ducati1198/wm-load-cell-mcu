@@ -1,7 +1,7 @@
 #!/bin/bash
-# STEP 2: flash the load cell board (CELL) application over CAN with the factory flashtool.py (Katapult tool, in tools/).
-# Needs the CAN bootloader of step 1 on the board (one time, with the Pico). With the ORIGINAL factory bootloader
-# this does not work: the board stays silent on CAN until it is powered off and on again.
+# Flash the load cell board (CELL) application over CAN with the factory flashtool.py (Katapult tool, in tools/).
+# No extra hardware. If the board still has the factory bootloader (which cannot be reached over CAN), it is first
+# replaced in software through the running firmware (tools/cell_bl_soft.py); the script asks before it does that.
 #
 #   bash 2_flash_app_can.sh              flash KLP_CELL_WM_ZRU_RPI_V2_20261117.bin (the V2 firmware)
 #   bash 2_flash_app_can.sh --factory    way back: flash the original KLP_CELL_WM_ZRU_20251223_162212.bin
@@ -48,27 +48,56 @@ PST=$(echo "$INFO" | python3 -c 'import sys,json;print(json.load(sys.stdin)["res
 say "board firmware now: ${CUR:-unknown}   printer state: ${PST:-unknown}"
 case "$PST" in printing|paused) die "the printer is printing. Wait until it is finished.";; esac
 
-echo
-echo "This only works if the new CAN bootloader (step 1, file ..._new_bootloader.bin) is on the board."
-echo "With the original factory bootloader the board will NOT answer, and stays silent until power off/on."
-if [ $DRY -eq 0 ]; then
-  read -r -p "Is the new bootloader installed on this board? Type yes: " A; [ "$A" = "yes" ] || die "cancelled, nothing changed (run step 1 first)"
-  read -r -p "Heaters off, printer idle. Klipper stops for about a minute. Type yes to flash: " A; [ "$A" = "yes" ] || die "cancelled, nothing changed"
-fi
-
+SOFT="$HERE/tools/cell_bl_soft.py"
+NEWBL="$HERE/firmware/KLP_CELL_WM_ZRU_20251223_162212_new_bootloader.bin"
+KPY="$HOME/klippy-env/bin/python"; [ -x "$KPY" ] || KPY=python3
 PY=python3
+
+echo
+echo "Klipper is stopped now for the check (and for the flash). Heaters off, printer idle."
+sudo systemctl stop klipper; sleep 2
+back() { sudo systemctl start klipper; }
+
+# which bootloader is on the board? (read through the running application, nothing is written)
+say "checking the bootloader of the board"
+PROBE="$(timeout 60 "$KPY" "$SOFT" "$UUID" probe 2>&1)"; echo "$PROBE" | sed 's/^/   /'
+KIND="$(echo "$PROBE" | sed -n 's/^BOOTLOADER: //p')"
+case "$KIND" in
+  new) say "the CAN bootloader is already on the board" ;;
+  factory)
+    echo
+    echo "This board has the FACTORY bootloader, which cannot be reached over CAN (wrong pins)."
+    echo "It is replaced now in software, through the running firmware: no Pico, no wires. It takes about 2 seconds."
+    echo "RISK: if the printer loses power or is switched off during those 2 seconds, the board will not start"
+    echo "      again without an SWD probe. Do not touch the printer while it writes."
+    if [ $DRY -eq 1 ]; then
+      say "dry run: would replace the bootloader with $(basename "$NEWBL"), then flash $(basename "$BIN")"
+      back; exit 0
+    fi
+    read -r -p "Type yes to replace the bootloader: " A; [ "$A" = "yes" ] || { back; die "cancelled, nothing changed"; }
+    timeout 120 "$KPY" "$SOFT" "$UUID" write "$NEWBL"; RC=$?
+    [ $RC -eq 0 ] || { back; die "the bootloader was not replaced (see the lines above). If it says DO NOT power off: run this script again now."; }
+    ;;
+  *)
+    # the application did not answer or the bootloader is not a known one: maybe the board already sits in the bootloader
+    if timeout 20 $PY "$FT" -i can0 -q 2>&1 | grep -qi "$UUID.*Katapult"; then
+      say "the board is waiting in its CAN bootloader"
+    else
+      back
+      die "could not identify the bootloader of this board, nothing was changed. (Board not answering: power the printer off and on, then try again.)"
+    fi ;;
+esac
+
 if [ $DRY -eq 1 ]; then
   say "dry run, would do:"
-  echo "   sudo systemctl stop klipper"
   echo "   $PY $FT -i can0 -u $UUID -r        (jump into the bootloader)"
   echo "   $PY $FT -i can0 -q                 (must list $UUID)"
   echo "   $PY $FT -i can0 -f $BIN -u $UUID -v"
-  echo "   sudo systemctl start klipper"
-  exit 0
+  back; exit 0
 fi
+read -r -p "Type yes to flash $(basename "$BIN"): " A; [ "$A" = "yes" ] || { back; die "cancelled (the firmware was not changed)"; }
 
 L="$(mktemp -d)"
-sudo systemctl stop klipper; sleep 2
 say "1/4 jump into the bootloader"
 timeout 20 $PY "$FT" -i can0 -u "$UUID" -r > "$L/r.log" 2>&1; cat "$L/r.log"
 sleep 1
@@ -77,8 +106,7 @@ timeout 20 $PY "$FT" -i can0 -q > "$L/q.log" 2>&1; cat "$L/q.log"
 if ! grep -qi "$UUID" "$L/q.log"; then
   sudo systemctl start klipper
   echo "STOP: the bootloader did not answer. Nothing was written."
-  echo "If the board does not come back on its own: power the printer off and on. If it still does not answer,"
-  echo "the new bootloader is not installed: do step 1 (needs the Pico), or go back with:  bash 1_write_bootloader_swd.sh --factory"
+  echo "If the board does not come back on its own: power the printer off and on, then run this script again."
   exit 1
 fi
 say "3/4 flash"

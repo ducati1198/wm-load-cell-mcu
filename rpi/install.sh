@@ -6,8 +6,8 @@
 #   1) Flash V2 (KLP_CELL_WM_ZRU_RPI_V2_20261117)
 #   2) Flash the original factory firmware (KLP_CELL_WM_ZRU_20251223_162212)
 #
-# Needs the new CAN bootloader on the board (written once over SWD with a Pico: 1_write_bootloader_swd.sh,
-# see README.md). The flashing itself is done by 2_flash_app_can.sh.
+# No extra hardware. If the board still has the factory bootloader, 2_flash_app_can.sh replaces it in software
+# first (it asks). Read README.md, "THE ONE RISK".
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 CAN="$HERE/2_flash_app_can.sh"

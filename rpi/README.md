@@ -2,7 +2,7 @@ WonderMaker ZR Ultra-S  -  load cell board (CELL) firmware V2 and flashing over 
 ===================================================================================
 
 Credit: the idea and the first steps come from ducati1198 (Discord, GitHub name "ducati1198").
-Thank you. Everything here was tested on a WonderMaker ZR Ultra-S run by a Raspberry Pi (2026-11-17).
+Thank you. Everything here was tested on a WonderMaker ZR Ultra-S run by a Raspberry Pi (2026-11-18).
 
 WHAT IS IN HERE
   firmware/KLP_CELL_WM_ZRU_20251223_162212.bin
@@ -16,50 +16,63 @@ WHAT IS IN HERE
   bootloader_source/   config, patch and commit of that bootloader (CanBoot is GPLv3, source is yours)
   tools/flashtool.py   the factory flash tool (Katapult flashtool, GPLv3, Eric Callahan), unchanged copy
   install.sh                  menu: 1) flash V2 over CAN, 2) flash factory over CAN (runs 2_flash_app_can.sh)
-  1_write_bootloader_swd.sh   step 1, once per board, needs a Pico (see below)
-  2_flash_app_can.sh          step 2, flash over CAN from the printer's Raspberry Pi, no extra hardware
-  3_flash_app_swd.sh          optional: flash the application over SWD with the Pico (fallback)
+  2_flash_app_can.sh          flash over CAN from the printer's Raspberry Pi, no extra hardware
+  tools/cell_bl_soft.py       replaces the bootloader in software (used by 2_flash_app_can.sh)
+  1_write_bootloader_swd.sh   rescue only: write a bootloader over SWD with a Pico
+  3_flash_app_swd.sh          rescue only: write the application over SWD with a Pico
   ANALYSIS.md         notes about the board and the firmware
   SHA256SUMS / MD5SUMS  check your download
 
-WHY TWO STEPS
-  The factory bootloader switches its CAN pins to PB8/PB9, but the board is wired to PA11/PA12. So the
-  factory bootloader can never answer on CAN, and "flash over CAN" cannot work on a board with it.
-  The new bootloader uses PA11/PA12 and keeps the same CAN id (uuid af..., same bitrate). It has to be
-  written ONE TIME over SWD. After that, every flash (V2, factory, later versions) works over CAN, no Pico.
+HOW IT WORKS
+  The factory bootloader of the load cell board switches its CAN pins to PB8/PB9, but the board is wired to
+  PA11/PA12. So the factory bootloader can never answer on CAN, and a normal "flash over CAN" cannot work.
+  The running firmware (Klipper) does talk on the right pins, and it has Klipper's debug commands
+  (debug_read / debug_write). tools/cell_bl_soft.py uses them to replace the bootloader in software:
+  it unlocks the flash of the chip, erases the two bootloader pages, writes the new bootloader and reads
+  it back. The new bootloader uses PA11/PA12 and keeps the same CAN id. After that every flash goes over CAN.
+  NO Pico, NO wires, NO soldering.
 
-STEP 1  (one time, needs a Raspberry Pi Pico with the "debugprobe" firmware, and openocd on the printer's Pi)
-  Wires Pico -> SWD pads of the load cell board:  GP2 -> SWCLK,  GP3 -> SWDIO,  GND -> GND  (no 3.3 V wire)
-  sudo apt install openocd
-  bash 1_write_bootloader_swd.sh --dry-run     (checks the probe sees the board, writes nothing)
-  bash 1_write_bootloader_swd.sh               (backs up the whole flash first, writes, verifies)
-  The application (V2 or factory) stays on the board and keeps running. The Pico is not needed again.
+HOW TO FLASH
+  bash install.sh                menu: 1) flash V2   2) flash the original factory firmware
+  or directly:
+  bash 2_flash_app_can.sh --dry-run        checks only, changes nothing (Klipper stops for a few seconds)
+  bash 2_flash_app_can.sh                  flash V2
+  bash 2_flash_app_can.sh --factory        way back: factory application
+  The script reads the CAN id from [mcu CELL] in ~/printer_data/config, stops Klipper, looks which bootloader
+  is on the board, replaces it if it is the factory one (it asks first), jumps into the bootloader, flashes,
+  verifies, starts Klipper and prints the new firmware name. The printer must be idle, heaters off.
 
-STEP 2  (over CAN)
-  bash install.sh                              menu with the two choices below
-  bash 2_flash_app_can.sh --dry-run
-  bash 2_flash_app_can.sh                      flash V2
-  bash 2_flash_app_can.sh --factory            way back: factory application
-  It reads the CAN id from [mcu CELL] in ~/printer_data/config, jumps into the bootloader, checks that the
-  bootloader answers, flashes, verifies, starts Klipper and prints the new firmware name.
-  Klipper must not be printing. Heaters off.
+THE ONE RISK
+  Replacing the bootloader takes about 2 seconds. For about 0.2 seconds of that the board has no bootloader.
+  If the printer loses power or is switched off in that moment, the board does not start again and only an
+  SWD probe (1_write_bootloader_swd.sh) can bring it back. Do not touch the printer while it writes.
+  If the tool says the read-back differs, it writes again by itself; never power off in between.
+  The tool refuses to write if the firmware, the chip or the bootloader on the board is not one it knows.
 
 WAY BACK  (everything is reversible)
-  application:  bash 2_flash_app_can.sh --factory      (or 3_flash_app_swd.sh --factory with the Pico)
-  bootloader :  bash 1_write_bootloader_swd.sh --factory   (Pico needed)
-  Every SWD script first saves the whole 512 KB flash to ~/cell-backup-DATE/ . Keep that file.
+  application:  bash 2_flash_app_can.sh --factory
+  bootloader :  sudo systemctl stop klipper
+                ~/klippy-env/bin/python tools/cell_bl_soft.py UUID write firmware/KLP_CELL_WM_ZRU_20251223_162212_original_bootloader.bin
+                sudo systemctl start klipper
+                (flash the application you want BEFORE this: with the factory bootloader CAN flashing is gone again)
+  The old bootloader area is saved to ~/cell-bootloader-before-DATE.bin before every bootloader write.
+
+RESCUE WITH A PROBE  (only if something went wrong; not needed normally)
+  A Raspberry Pi Pico with the "debugprobe" firmware and openocd on the printer's Pi.
+  Wires Pico -> SWD pads of the load cell board:  GP2 -> SWCLK,  GP3 -> SWDIO,  GND -> GND  (no 3.3 V wire)
+  bash 1_write_bootloader_swd.sh [--factory]     write the new (or the factory) bootloader
+  bash 3_flash_app_swd.sh [--factory]            write the application
+  Both save the whole flash to ~/cell-backup-DATE/ first.
 
 WARNINGS
-  - Do NOT run step 2 on a board that still has the FACTORY bootloader. The board stays silent on CAN
-    until the printer is powered off and on. Nothing is damaged, but it is confusing. The script asks.
-  - The Pico alternative for step 2 is 3_flash_app_swd.sh (works with any bootloader).
-  - Always "reset halt" before an SWD write (the scripts do): the board's watchdog resets the chip otherwise.
-  - openocd prints "checksum mismatch - attempting binary compare" and then "verified": normal.
   - You do this at your own risk. Nothing here is from WonderMaker.
+  - Tested on ONE board. If your board is different the tool should stop by itself and change nothing.
 
-TEST STATUS (2026-11-17, one board, one printer)
-  - New bootloader written over SWD with the Pico: application unchanged, board came back, uuid unchanged.
-  - Flash of V2 over CAN with tools/flashtool.py: OK, verified, Klipper reports the V2 name.
-  - Flash of the factory application over CAN: OK, verified, Klipper reports KLP_CELL_WM_ZRU_20251223_162212.
-  - Way back to the original bootloader over SWD: OK.
-  Not tested: other boards, other CAN bitrates than the factory one.
+TEST STATUS (2026-11-18, ONE board, one printer, a Pico wired as safety net)
+  - From the real factory state (factory bootloader + factory application): install.sh option 1 replaced the
+    bootloader in software (1.2 s, read back identical on the first attempt) and flashed V2 over CAN: OK.
+  - install.sh option 2 (factory application) with the new bootloader already there: OK.
+  - Bootloader way back in software (original bootloader written again), then option 1 again: OK.
+  - After the last run the Pico confirmed bootloader and application byte for byte.
+  - The software bootloader write was done 5 times in total, every time right on the first attempt.
+  Not tested: other boards, other firmware versions, a power loss during the write.

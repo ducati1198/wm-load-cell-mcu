@@ -12,6 +12,7 @@ set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 CAN="$HERE/2_flash_app_can.sh"
 MOON="http://127.0.0.1:7125"
+VER="$(cat "$HERE/../VERSION" 2>/dev/null || echo "?")"
 [ -f "$CAN" ] || { echo "2_flash_app_can.sh is missing next to install.sh"; exit 1; }
 
 current() {
@@ -23,7 +24,7 @@ while true; do
   CUR="$(current)"
   echo
   echo "=========================================================="
-  echo " WonderMaker load cell board (CELL) - flash over CAN"
+  echo " WonderMaker load cell board (CELL) - flash over CAN   v$VER"
   echo " Board firmware now: ${CUR:-unknown (Klipper not running?)}"
   echo "=========================================================="
   echo "  1) Flash V2        KLP_CELL_WM_ZRU_RPI_V2_20261117"

@@ -50,7 +50,22 @@ The factory screen board is **not** supported yet (folder `factory-board/` will 
 
 ## Install with the menu
 
-On the printer's Raspberry Pi (SSH):
+On the printer's Raspberry Pi (SSH).
+
+First make sure `git` is installed. Check with:
+
+```bash
+git --version
+```
+
+If it answers `git version ...`, it is there. If it says `command not found`, install it:
+
+```bash
+sudo apt update
+sudo apt install -y git
+```
+
+Then download this repo and start the menu:
 
 ```bash
 cd ~
@@ -75,7 +90,7 @@ Choose `1`. The script then:
 4. asks for `yes`, flashes the firmware over CAN and verifies it;
 5. starts Klipper and prints the firmware name the board reports.
 
-No `git`? Download the zip instead:
+If you do not want to install `git`, download the files with `curl` instead:
 
 ```bash
 cd ~

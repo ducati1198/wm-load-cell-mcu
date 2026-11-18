@@ -1,11 +1,13 @@
 # wm-load-cell-mcu
 
+![version](https://img.shields.io/badge/version-1.0.0-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/board-WonderMaker%20ZR%20Ultra--S%20CELL-orange)
+
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S**.
 
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No Pico, no wires, no soldering.** Everything runs from the printer's Raspberry Pi.
 
-Version: see [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.0** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >

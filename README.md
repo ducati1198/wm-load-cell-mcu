@@ -1,6 +1,6 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.5-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.6-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
@@ -9,7 +9,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 
-**Version 1.0.5** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.6** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -54,7 +54,7 @@ PA11/PA12. So the bootloader can never hear the Pi, and the usual "flash over CA
 silent until the printer is powered off and on).
 
 This repo solves it in software. The running firmware does talk on the right pins and has Klipper's
-`debug_read` / `debug_write` commands. The tool `rpi/tools/cell_bl_soft.py` uses them to replace the
+`debug_read` / `debug_write` commands. The tool `zr-ultra/tools/cell_bl_soft.py` uses them to replace the
 bootloader with one that uses PA11/PA12 (same CAN id as before). After that, flashing over CAN works.
 
 ## Which printers
@@ -99,7 +99,7 @@ Then download this repo and start the menu:
 ```bash
 cd ~
 git clone https://github.com/ducati1198/wm-load-cell-mcu.git
-cd wm-load-cell-mcu/rpi
+cd wm-load-cell-mcu
 bash install.sh
 ```
 
@@ -118,7 +118,7 @@ If you do not want to install `git`, download the files with `curl` instead:
 ```bash
 cd ~
 curl -L https://github.com/ducati1198/wm-load-cell-mcu/archive/refs/heads/main.tar.gz | tar xz
-cd wm-load-cell-mcu-main/rpi
+cd wm-load-cell-mcu-main
 bash install.sh
 ```
 
@@ -156,7 +156,7 @@ If you installed with the `curl` download (no `git`), there is nothing to pull. 
 cd ~
 rm -rf wm-load-cell-mcu-main
 curl -L https://github.com/ducati1198/wm-load-cell-mcu/archive/refs/heads/main.tar.gz | tar xz
-cd wm-load-cell-mcu-main/rpi
+cd wm-load-cell-mcu-main
 bash install.sh
 ```
 
@@ -169,7 +169,7 @@ bootloader changed and you want that change. Check which firmware the board runs
 One command, same checks and questions as the menu:
 
 ```bash
-cd ~/wm-load-cell-mcu/rpi
+cd ~/wm-load-cell-mcu/zr-ultra
 bash 2_flash_app_can.sh --dry-run     # checks only, changes nothing (Klipper stops for a few seconds)
 bash 2_flash_app_can.sh               # flash V2
 bash 2_flash_app_can.sh --factory     # flash the original factory firmware
@@ -183,7 +183,7 @@ Options: `--bin FILE` (another application file), `--uuid ID` (CAN id by hand),
 The same steps as the script, one by one. Use this only if you know what each line does.
 
 ```bash
-cd ~/wm-load-cell-mcu/rpi
+cd ~/wm-load-cell-mcu/zr-ultra
 UUID=$(grep -rhA8 '^\[mcu CELL\]' ~/printer_data/config | awk -F': *' '/canbus_uuid/{print $2; exit}' | tr -d ' \r')
 echo $UUID                                    # must show 12 characters, starting with af
 
@@ -232,7 +232,7 @@ Everything is reversible, from the menu:
 Without the menu:
 
 ```bash
-cd ~/wm-load-cell-mcu/rpi
+cd ~/wm-load-cell-mcu/zr-ultra
 bash 2_flash_app_can.sh --factory               # original firmware only
 bash 4_restore_factory_bootloader.sh            # original firmware + original bootloader (asks once)
 bash 4_restore_factory_bootloader.sh --dry-run  # only check, change nothing
@@ -259,21 +259,21 @@ Both scripts save the whole flash to `~/cell-backup-DATE/` first.
 
 | Path | What |
 |---|---|
-| `rpi/install.sh` | The menu |
-| `rpi/2_flash_app_can.sh` | Checks, replaces the bootloader if needed, flashes over CAN |
-| `rpi/4_restore_factory_bootloader.sh` | Puts the board back to the original factory firmware and bootloader |
-| `rpi/tools/cell_bl_soft.py` | Replaces the bootloader in software (`probe`, `trial`, `write FILE`) |
-| `rpi/tools/flashtool.py` | The factory CAN flash tool (Katapult, unchanged copy) |
-| `rpi/firmware/KLP_CELL_WM_ZRU_RPI_V2_20261117.bin` | V2 firmware |
-| `rpi/firmware/KLP_CELL_WM_ZRU_20251223_162212.bin` | Original factory firmware, read out of a real board |
-| `rpi/firmware/KLP_CELL_WM_ZRU_20251223_162212_new_bootloader.bin` | New bootloader, CAN on PA11/PA12 |
-| `rpi/firmware/KLP_CELL_WM_ZRU_20251223_162212_original_bootloader.bin` | Original factory bootloader |
-| `rpi/bootloader_source/` | Config, patch and source commit of the new bootloader |
-| `rpi/1_write_bootloader_swd.sh`, `rpi/3_flash_app_swd.sh` | Rescue with a probe |
-| `rpi/MD5SUMS`, `rpi/SHA256SUMS` | Checksums |
-| `rpi/ANALYSIS.md` | Notes about the board and the firmware |
+| `install.sh` (main folder) | The menu |
+| `zr-ultra/2_flash_app_can.sh` | Checks, replaces the bootloader if needed, flashes over CAN |
+| `zr-ultra/4_restore_factory_bootloader.sh` | Puts the board back to the original factory firmware and bootloader |
+| `zr-ultra/tools/cell_bl_soft.py` | Replaces the bootloader in software (`probe`, `trial`, `write FILE`) |
+| `zr-ultra/tools/flashtool.py` | The factory CAN flash tool (Katapult, unchanged copy) |
+| `zr-ultra/firmware/KLP_CELL_WM_ZRU_RPI_V2_20261117.bin` | V2 firmware |
+| `zr-ultra/firmware/KLP_CELL_WM_ZRU_20251223_162212.bin` | Original factory firmware, read out of a real board |
+| `zr-ultra/firmware/KLP_CELL_WM_ZRU_20251223_162212_new_bootloader.bin` | New bootloader, CAN on PA11/PA12 |
+| `zr-ultra/firmware/KLP_CELL_WM_ZRU_20251223_162212_original_bootloader.bin` | Original factory bootloader |
+| `zr-ultra/bootloader_source/` | Config, patch and source commit of the new bootloader |
+| `zr-ultra/1_write_bootloader_swd.sh`, `zr-ultra/3_flash_app_swd.sh` | Rescue with a probe |
+| `zr-ultra/MD5SUMS`, `zr-ultra/SHA256SUMS` | Checksums |
+| `zr-ultra/ANALYSIS.md` | Notes about the board and the firmware |
 
-More detail and the full test list: [`rpi/README.md`](rpi/README.md).
+More detail and the full test list: [`zr-ultra/README.md`](zr-ultra/README.md).
 
 ## Test status
 

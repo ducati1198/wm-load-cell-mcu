@@ -4,6 +4,8 @@
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
+**Where is the board?** The load cell MCU board (`[mcu CELL]` in Klipper) is located **under the heated bed**. It is the board that reads the load cell used by the tool setter and the nozzle touch (offset calibration). This repo is only for that board. Nothing here changes the main board, the toolhead boards or the screen board.
+
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi over the normal CAN cable.
 

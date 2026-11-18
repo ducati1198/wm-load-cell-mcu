@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.5 - 2026-11-18
+- The install, update and restore also add the user to the `sudo` group automatically if it is not in it yet (the password is still asked only once).
+
 ## 1.0.4 - 2026-11-18
 - The install, the update and the restore ask for the sudo password **one time** at the start and keep it for all steps (stop Klipper, flash, start Klipper). New `rpi/lib_sudo.sh`. Needed on boards where `sudo` asks for a password (for example the factory screen board).
 

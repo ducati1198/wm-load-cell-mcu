@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.2 - 2026-11-18
+- Version test (no code change): checks that a new version and its tag reach GitHub.
+
 ## 1.0.1 - 2026-11-18
 - README: for the WonderMaker ZR Ultra-S and the ZR Ultra (tested on an Ultra-S only).
 - `install.sh` option 3: put the board back to the original factory state (factory firmware first, then the original factory bootloader), in software, no Pico. Script: `rpi/4_restore_factory_bootloader.sh` (`--dry-run` supported).

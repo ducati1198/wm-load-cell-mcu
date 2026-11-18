@@ -129,9 +129,7 @@ If you installed with `git clone`:
 
 ```bash
 cd ~/wm-load-cell-mcu
-cat VERSION                 # the version you have now
 git pull                    # get the new files
-cat VERSION                 # the new version
 ```
 
 `git pull` says `Already up to date.` if there is nothing new. Read [`CHANGELOG.md`](CHANGELOG.md) to see what changed.

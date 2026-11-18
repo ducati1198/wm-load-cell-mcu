@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.15 - 2026-11-18
+- The small `rpi/install.sh` that only forwarded to the new `install.sh` is removed. A clone older than 1.0.6 that updates through its old menu now has to run `bash install.sh` from the main folder once (`git pull`, then `bash install.sh`).
+
 ## 1.0.14 - 2026-11-18
 - The menu no longer prints "No such file or directory" for `.bootloader-state` on a fresh download (seen when the vanilla Klipper installer opens this menu for the first time).
 - README: new section about the vanilla Klipper installer, which downloads this project and flashes V2 at the end of a full install.

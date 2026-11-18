@@ -1,6 +1,6 @@
 # wm-load-cell-mcu
 
-![version](https://img.shields.io/badge/version-1.0.14-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
+![version](https://img.shields.io/badge/version-1.0.15-blue) ![licence](https://img.shields.io/badge/licence-GPLv3-green) ![board](https://img.shields.io/badge/printers-ZR%20Ultra--S%20%7C%20ZR%20Ultra-orange)
 
 Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker ZR Ultra-S** and the **WonderMaker ZR Ultra**.
 
@@ -9,7 +9,7 @@ Firmware and flash tools for the **load cell board (CELL)** of the **WonderMaker
 - Flash the patched firmware **V2**, or go back to the **original factory firmware**, over CAN.
 - **No SWD programmer, no Pico, no ST-Link, no wires, no soldering.** Everything runs from the printer's Raspberry Pi, or from the WonderMaker factory screen board, over the normal CAN cable.
 
-**Version 1.0.14** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
+**Version 1.0.15** (2026-11-18). See [`VERSION`](VERSION) and [`CHANGELOG.md`](CHANGELOG.md). Credit: ducati1198.
 
 > ## ⚠️ Warning: read this first
 >
@@ -297,7 +297,6 @@ Both scripts save the whole flash to `~/wm-load-cell-mcu-backups/cell-backup-DAT
 |---|---|
 | `install.sh` (main folder) | The menu |
 | `VERSION`, `CHANGELOG.md` | The version and what changed |
-| `rpi/install.sh` | Only forwards to `install.sh`, so that an update from an old version (before 1.0.6) still works |
 | `.github/workflows/release.yml` | Makes the GitHub release when `VERSION` changes |
 | `docs/` | The pictures in this README |
 | `zr-ultra/lib_sudo.sh` | Asks for the `sudo` password once, remembers the bootloader state |
